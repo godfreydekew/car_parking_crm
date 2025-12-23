@@ -1,0 +1,13 @@
+/app/__pycache__
+
+env/
+
+.env.*
+*.env
+
+.vscode/
+.idea/
+.DS_Store
+
+*.pid
+*.sock
