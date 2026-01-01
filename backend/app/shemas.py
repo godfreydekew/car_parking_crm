@@ -6,7 +6,6 @@ from typing import Optional, Literal
 BookingStatus = Literal["BOOKED", "ON_SITE", "COLLECTED", "OVERSTAY", "CANCELLED", "NO_SHOW"]
 FlightType = Literal["domestic", "international"]
 PaymentMethod = Literal["cash", "eft", "card", "other"]
-LeadStatus = Literal["NEW", "CONTACTED", "QUOTED", "BOOKED", "LOST"]
 
 
 # ---------- Customers ----------
@@ -81,28 +80,6 @@ class BookingOut(BookingBase):
 
     customer: CustomerOut
     vehicle: VehicleOut
-
-    class Config:
-        from_attributes = True
-
-
-# ---------- Leads ----------
-class LeadBase(BaseModel):
-    full_name: str = Field(min_length=2, max_length=150)
-    whatsapp_number: Optional[str] = Field(default=None, max_length=40)
-    email: Optional[EmailStr] = None
-    source: str = "manual"
-    status: LeadStatus = "NEW"
-    notes: Optional[str] = None
-
-
-class LeadCreate(LeadBase):
-    pass
-
-
-class LeadOut(LeadBase):
-    id: int
-    created_at: datetime
 
     class Config:
         from_attributes = True

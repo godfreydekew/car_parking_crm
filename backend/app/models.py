@@ -17,12 +17,6 @@ from .db import Base
 
 
 # ---------- Enums ----------
-class UserRole(str, enum.Enum):
-    admin = "admin"
-    manager = "manager"
-    driver = "driver"
-
-
 class FlightType(str, enum.Enum):
     domestic = "domestic"
     international = "international"
@@ -42,14 +36,6 @@ class BookingStatus(str, enum.Enum):
     overstay = "OVERSTAY"
     cancelled = "CANCELLED"
     no_show = "NO_SHOW"
-
-
-class LeadStatus(str, enum.Enum):
-    new = "NEW"
-    contacted = "CONTACTED"
-    quoted = "QUOTED"
-    booked = "BOOKED"
-    lost = "LOST"
 
 
 class AuditEventType(str, enum.Enum):
@@ -77,7 +63,6 @@ class User(Base, TimestampMixin):
     full_name: Mapped[str] = mapped_column(String(120), nullable=False)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
-    role: Mapped[UserRole] = mapped_column(Enum(UserRole), default=UserRole.driver, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     audit_logs: Mapped[list["AuditLog"]] = relationship(back_populates="actor")
@@ -121,7 +106,6 @@ class Booking(Base, TimestampMixin):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
-    # Source tracking (since you sync from spreadsheet)
     source: Mapped[str] = mapped_column(String(30), default="spreadsheet", nullable=False)
     source_row_id: Mapped[str | None] = mapped_column(String(100), nullable=True, index=True)
 
@@ -149,18 +133,6 @@ class Booking(Base, TimestampMixin):
         Index("ix_booking_status", "status"),
         UniqueConstraint("source", "source_row_id", name="uq_booking_source_row"),
     )
-
-
-class Lead(Base, TimestampMixin):
-    __tablename__ = "leads"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    full_name: Mapped[str] = mapped_column(String(150), nullable=False)
-    whatsapp_number: Mapped[str | None] = mapped_column(String(40), index=True, nullable=True)
-    email: Mapped[str | None] = mapped_column(String(255), index=True, nullable=True)
-    source: Mapped[str] = mapped_column(String(60), default="manual", nullable=False)
-    status: Mapped[LeadStatus] = mapped_column(Enum(LeadStatus), default=LeadStatus.new, nullable=False)
-    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
 
 
 class AuditLog(Base):

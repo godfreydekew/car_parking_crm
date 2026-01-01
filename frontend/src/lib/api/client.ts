@@ -1,0 +1,53 @@
+/**
+ * API client utility functions
+ */
+import { apiConfig } from './config';
+
+export interface ApiError {
+  detail: string;
+}
+
+async function handleResponse<T>(response: Response): Promise<T> {
+  if (!response.ok) {
+    const error: ApiError = await response.json().catch(() => ({
+      detail: `HTTP error! status: ${response.status}`,
+    }));
+    throw new Error(error.detail || 'An error occurred');
+  }
+  return response.json();
+}
+
+export async function apiGet<T>(endpoint: string): Promise<T> {
+  const response = await fetch(`${apiConfig.baseURL}${endpoint}`, {
+    method: 'GET',
+    headers: apiConfig.headers,
+  });
+  return handleResponse<T>(response);
+}
+
+export async function apiPost<T>(endpoint: string, data?: unknown): Promise<T> {
+  const response = await fetch(`${apiConfig.baseURL}${endpoint}`, {
+    method: 'POST',
+    headers: apiConfig.headers,
+    body: data ? JSON.stringify(data) : undefined,
+  });
+  return handleResponse<T>(response);
+}
+
+export async function apiPatch<T>(endpoint: string, data?: unknown): Promise<T> {
+  const response = await fetch(`${apiConfig.baseURL}${endpoint}`, {
+    method: 'PATCH',
+    headers: apiConfig.headers,
+    body: data ? JSON.stringify(data) : undefined,
+  });
+  return handleResponse<T>(response);
+}
+
+export async function apiDelete<T>(endpoint: string): Promise<T> {
+  const response = await fetch(`${apiConfig.baseURL}${endpoint}`, {
+    method: 'DELETE',
+    headers: apiConfig.headers,
+  });
+  return handleResponse<T>(response);
+}
+

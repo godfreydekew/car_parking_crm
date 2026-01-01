@@ -1,0 +1,2 @@
+# Bookings routes package
+
