@@ -124,7 +124,7 @@ export async function updateBookingStatus(
   status: string
 ): Promise<Booking> {
   const booking = await apiPatch<Booking>(
-    `/api/bookings/${bookingId}/status?status=${status}`
+    `/api/bookings/${bookingId}/status?status=${status.toLowerCase()}`
   );
   
   // Convert date strings to Date objects

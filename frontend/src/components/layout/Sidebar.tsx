@@ -22,7 +22,7 @@ const navigation = [
   { name: "Check-in/out", href: "/check-in-out", icon: Car },
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Bookings", href: "/bookings", icon: CalendarCheck },
-  { name: "Operations", href: "/operations", icon: Clock },
+  { name: "Cars On Site", href: "/operations", icon: Clock },
   { name: "Overstays", href: "/overstays", icon: Clock },
   { name: "Customers", href: "/customers", icon: Users },
   { name: "Reports", href: "/reports", icon: BarChart3 },

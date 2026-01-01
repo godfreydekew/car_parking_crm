@@ -95,14 +95,13 @@ def get_bookings(
     payment_method: Optional[str] = Query(None, description="Filter by payment method"),
     flight_type: Optional[str] = Query(None, description="Filter by flight type"),
     search: Optional[str] = Query(None, description="Search in name, email, phone, or registration"),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
     db: Session = Depends(get_db),
 ):
     """
     Get all bookings with optional filters.
     
-    Supports filtering by status, payment method, flight type, and search query.
+    Returns all bookings matching the filters (no pagination limit).
+    Frontend handles pagination client-side.
     """
     # Convert string filters to enums
     status_enum = None
@@ -126,14 +125,15 @@ def get_bookings(
         except KeyError:
             raise HTTPException(status_code=400, detail=f"Invalid flight type: {flight_type}")
     
+    # Get all bookings without pagination limit
     bookings = BookingService.get_all(
         db=db,
         status=status_enum,
         payment_method=payment_enum,
         flight_type=flight_enum,
         search=search,
-        skip=skip,
-        limit=limit,
+        skip=0,
+        limit=10000,  # Large limit to get all bookings
     )
     
     return [booking_to_out(booking) for booking in bookings]

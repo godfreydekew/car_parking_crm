@@ -12,12 +12,13 @@ import {
   checkInBooking as apiCheckIn,
   collectBooking as apiCollect,
   addBookingNote as apiAddNote,
+  updateBookingStatus as apiUpdateStatus,
 } from "@/lib/api/bookings";
 
 interface CRMContextType {
   bookings: Booking[];
   customers: Customer[];
-  updateBookingStatus: (bookingId: string, status: BookingStatus) => void;
+  updateBookingStatus: (bookingId: string, status: BookingStatus) => Promise<void>;
   checkInBooking: (bookingId: string) => Promise<void>;
   collectBooking: (bookingId: string) => Promise<void>;
   addBookingNote: (bookingId: string, note: string) => Promise<void>;
@@ -56,10 +57,10 @@ export const CRMProvider: React.FC<{ children: ReactNode }> = ({
             const customerBookings = fetchedBookings.filter(
               (b) => b.customerId === booking.customerId
             );
-            const totalSpend = customerBookings.reduce(
-              (sum, b) => sum + b.cost,
-              0
-            );
+            // Exclude cancelled and no show bookings from total spend
+            const totalSpend = customerBookings
+              .filter((b) => b.status !== "CANCELLED" && b.status !== "NO_SHOW")
+              .reduce((sum, b) => sum + b.cost, 0);
             const lastVisit = customerBookings[0]?.timestamp;
 
             customerMap.set(booking.customerId, {
@@ -90,26 +91,18 @@ export const CRMProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   const updateBookingStatus = useCallback(
-    (bookingId: string, status: BookingStatus) => {
-      setBookings((prev) =>
-        prev.map((booking) => {
-          if (booking.id === bookingId) {
-            const newActivity: ActivityEvent = {
-              id: generateId(),
-              type: "status_changed",
-              description: `Status changed to ${status}`,
-              timestamp: new Date(),
-              user: "Admin",
-            };
-            return {
-              ...booking,
-              status,
-              activity: [...booking.activity, newActivity],
-            };
-          }
-          return booking;
-        })
-      );
+    async (bookingId: string, status: BookingStatus) => {
+      try {
+        const updatedBooking = await apiUpdateStatus(bookingId, status);
+        setBookings((prev) =>
+          prev.map((booking) =>
+            booking.id === bookingId ? updatedBooking : booking
+          )
+        );
+      } catch (err) {
+        console.error("Error updating booking status:", err);
+        throw err;
+      }
     },
     []
   );

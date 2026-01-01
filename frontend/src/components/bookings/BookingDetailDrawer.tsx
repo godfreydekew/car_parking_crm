@@ -21,6 +21,8 @@ import {
   FileText,
   CheckCircle2,
   LogIn,
+  X,
+  UserX,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
@@ -36,7 +38,7 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
   open,
   onClose,
 }) => {
-  const { checkInBooking, collectBooking } = useCRM();
+  const { checkInBooking, collectBooking, updateBookingStatus } = useCRM();
 
   if (!booking) return null;
 
@@ -57,6 +59,40 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
     onClose();
   };
 
+  const handleCancel = async () => {
+    try {
+      await updateBookingStatus(booking.id, 'CANCELLED');
+      toast({
+        title: "Booking cancelled",
+        description: `${booking.fullName}'s booking has been cancelled.`,
+      });
+      onClose();
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to cancel booking. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleNoShow = async () => {
+    try {
+      await updateBookingStatus(booking.id, 'NO_SHOW');
+      toast({
+        title: "Marked as No Show",
+        description: `${booking.fullName}'s booking has been marked as no show.`,
+      });
+      onClose();
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to update booking. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
@@ -72,21 +108,37 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
 
         <div className="mt-6 space-y-6">
           {/* Quick Actions */}
-          {(booking.status === 'BOOKED' || booking.status === 'ON_SITE' || booking.status === 'OVERSTAY') && (
-            <div className="flex gap-3">
-              {booking.status === 'BOOKED' && (
-                <Button onClick={handleCheckIn} className="flex-1 gap-2">
-                  <LogIn className="h-4 w-4" />
-                  Mark Check-in
+          {booking.status === 'BOOKED' && (
+            <div className="space-y-3">
+              <Button onClick={handleCheckIn} className="w-full gap-2">
+                <LogIn className="h-4 w-4" />
+                Mark Check-in
+              </Button>
+              <div className="flex gap-3">
+                <Button 
+                  onClick={handleCancel} 
+                  variant="outline" 
+                  className="flex-1 gap-2 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                >
+                  <X className="h-4 w-4" />
+                  Mark as Cancel
                 </Button>
-              )}
-              {(booking.status === 'ON_SITE' || booking.status === 'OVERSTAY') && (
-                <Button onClick={handleCollect} className="flex-1 gap-2">
-                  <CheckCircle2 className="h-4 w-4" />
-                  Mark Collected
+                <Button 
+                  onClick={handleNoShow} 
+                  variant="outline" 
+                  className="flex-1 gap-2 border-warning text-warning hover:bg-warning hover:text-warning-foreground"
+                >
+                  <UserX className="h-4 w-4" />
+                  No Show
                 </Button>
-              )}
+              </div>
             </div>
+          )}
+          {(booking.status === 'ON_SITE' || booking.status === 'OVERSTAY') && (
+            <Button onClick={handleCollect} className="w-full gap-2">
+              <CheckCircle2 className="h-4 w-4" />
+              Mark Collected
+            </Button>
           )}
 
           {/* Contact Info */}

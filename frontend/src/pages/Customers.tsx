@@ -20,42 +20,73 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { format } from "date-fns";
-import { 
-  Search, 
-  Users, 
-  Star, 
+import {
+  Search,
+  Users,
+  Star,
   Eye,
   Mail,
   Phone,
   Calendar,
-  DollarSign,
+  XCircle,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
+type CustomerFilter = 'all' | 'repeat' | 'cancelled';
+
 const Customers = () => {
   const { customers, bookings, getBookingsByCustomer } = useCRM();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [activeFilter, setActiveFilter] = useState<CustomerFilter>('all');
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null
+  );
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const filteredCustomers = useMemo(() => {
-    if (!searchQuery) return customers;
-    const query = searchQuery.toLowerCase();
-    return customers.filter(c => 
-      c.fullName.toLowerCase().includes(query) ||
-      c.email.toLowerCase().includes(query) ||
-      c.whatsapp.includes(searchQuery)
-    );
-  }, [customers, searchQuery]);
+    let filtered = customers;
 
-  const repeatCustomers = useMemo(() => 
-    customers.filter(c => c.isRepeat).length,
-  [customers]);
+    // Filter by active filter
+    if (activeFilter === 'repeat') {
+      filtered = filtered.filter((c) => c.isRepeat);
+    } else if (activeFilter === 'cancelled') {
+      filtered = filtered.filter((c) => {
+        const customerBookings = getBookingsByCustomer(c.id);
+        return customerBookings.some(
+          (b) => b.status === "CANCELLED" || b.status === "NO_SHOW"
+        );
+      });
+    }
+    // 'all' shows all customers, no filter needed
 
-  const totalRevenue = useMemo(() => 
-    customers.reduce((sum, c) => sum + c.totalSpend, 0),
-  [customers]);
+    // Filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (c) =>
+          c.fullName.toLowerCase().includes(query) ||
+          c.email.toLowerCase().includes(query) ||
+          c.whatsapp.includes(searchQuery)
+      );
+    }
+
+    return filtered;
+  }, [customers, searchQuery, activeFilter, getBookingsByCustomer]);
+
+  const repeatCustomers = useMemo(
+    () => customers.filter((c) => c.isRepeat).length,
+    [customers]
+  );
+
+  const cancelledNoShowCount = useMemo(() => {
+    return customers.filter((c) => {
+      const customerBookings = getBookingsByCustomer(c.id);
+      return customerBookings.some(
+        (b) => b.status === "CANCELLED" || b.status === "NO_SHOW"
+      );
+    }).length;
+  }, [customers, getBookingsByCustomer]);
 
   const customerBookings = useMemo(() => {
     if (!selectedCustomer) return [];
@@ -71,60 +102,111 @@ const Customers = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card>
+        <Card
+          className={
+            activeFilter === 'all'
+              ? "ring-2 ring-primary cursor-pointer"
+              : "cursor-pointer hover:bg-muted/50 transition-colors"
+          }
+          onClick={() => setActiveFilter('all')}
+        >
           <CardContent className="p-4 flex items-center gap-4">
             <div className="p-3 rounded-lg bg-primary/10">
               <Users className="h-5 w-5 text-primary" />
             </div>
             <div>
               <p className="text-2xl font-bold">{customers.length}</p>
-              <p className="text-sm text-muted-foreground">Total Customers</p>
+              <p className="text-sm text-muted-foreground">
+                All Customers
+                {activeFilter === 'all' && (
+                  <span className="ml-1 text-primary">(filtered)</span>
+                )}
+              </p>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card
+          className={
+            activeFilter === 'repeat'
+              ? "ring-2 ring-primary cursor-pointer"
+              : "cursor-pointer hover:bg-muted/50 transition-colors"
+          }
+          onClick={() => setActiveFilter('repeat')}
+        >
           <CardContent className="p-4 flex items-center gap-4">
             <div className="p-3 rounded-lg bg-success/10">
               <Star className="h-5 w-5 text-success" />
             </div>
             <div>
               <p className="text-2xl font-bold">{repeatCustomers}</p>
-              <p className="text-sm text-muted-foreground">Repeat Customers</p>
+              <p className="text-sm text-muted-foreground">
+                Repeat Customers
+                {activeFilter === 'repeat' && (
+                  <span className="ml-1 text-primary">(filtered)</span>
+                )}
+              </p>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card
+          className={
+            activeFilter === 'cancelled'
+              ? "ring-2 ring-primary cursor-pointer"
+              : "cursor-pointer hover:bg-muted/50 transition-colors"
+          }
+          onClick={() => setActiveFilter('cancelled')}
+        >
           <CardContent className="p-4 flex items-center gap-4">
-            <div className="p-3 rounded-lg bg-info/10">
-              <DollarSign className="h-5 w-5 text-info" />
+            <div className="p-3 rounded-lg bg-destructive/10">
+              <XCircle className="h-5 w-5 text-destructive" />
             </div>
             <div>
-              <p className="text-2xl font-bold">R{totalRevenue.toLocaleString()}</p>
-              <p className="text-sm text-muted-foreground">Total Revenue</p>
+              <p className="text-2xl font-bold">{cancelledNoShowCount}</p>
+              <p className="text-sm text-muted-foreground">
+                Cancelled / No Show
+                {activeFilter === 'cancelled' && (
+                  <span className="ml-1 text-primary">(filtered)</span>
+                )}
+              </p>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search customers..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-9"
-        />
+      {/* Search and Filter */}
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search customers..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        {activeFilter !== 'all' && (
+          <Button
+            variant="outline"
+            onClick={() => setActiveFilter('all')}
+            className="gap-2"
+          >
+            {activeFilter === 'repeat' && <Star className="h-4 w-4" />}
+            {activeFilter === 'cancelled' && <XCircle className="h-4 w-4" />}
+            Clear Filter
+          </Button>
+        )}
       </div>
 
       {/* Mobile Cards */}
       <div className="space-y-3 md:hidden">
         {filteredCustomers.length === 0 ? (
-          <p className="text-center py-12 text-muted-foreground">No customers found</p>
+          <p className="text-center py-12 text-muted-foreground">
+            No customers found
+          </p>
         ) : (
           filteredCustomers.map((customer) => (
-            <div 
-              key={customer.id} 
+            <div
+              key={customer.id}
               className="border rounded-lg p-4 bg-card space-y-3"
               onClick={() => {
                 setSelectedCustomer(customer);
@@ -134,7 +216,10 @@ const Customers = () => {
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium text-primary">
-                    {customer.fullName.split(' ').map(n => n[0]).join('')}
+                    {customer.fullName
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
                   </div>
                   <div>
                     <p className="font-medium">{customer.fullName}</p>
@@ -149,7 +234,9 @@ const Customers = () => {
                 <Eye className="h-4 w-4 text-muted-foreground" />
               </div>
               <div className="text-sm space-y-1">
-                {customer.email && <p className="text-muted-foreground">{customer.email}</p>}
+                {customer.email && (
+                  <p className="text-muted-foreground">{customer.email}</p>
+                )}
                 <p className="text-muted-foreground">{customer.whatsapp}</p>
               </div>
               <div className="grid grid-cols-3 gap-2 text-sm pt-2 border-t">
@@ -159,12 +246,16 @@ const Customers = () => {
                 </div>
                 <div>
                   <p className="text-muted-foreground text-xs">Spend</p>
-                  <p className="font-medium">R{customer.totalSpend.toLocaleString()}</p>
+                  <p className="font-medium">
+                    R{customer.totalSpend.toLocaleString()}
+                  </p>
                 </div>
                 <div>
                   <p className="text-muted-foreground text-xs">Last Visit</p>
                   <p className="font-medium">
-                    {customer.lastVisit ? format(customer.lastVisit, 'dd MMM') : '—'}
+                    {customer.lastVisit
+                      ? format(customer.lastVisit, "dd MMM")
+                      : "—"}
                   </p>
                 </div>
               </div>
@@ -190,7 +281,10 @@ const Customers = () => {
             <TableBody>
               {filteredCustomers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
+                  <TableCell
+                    colSpan={6}
+                    className="text-center py-12 text-muted-foreground"
+                  >
                     No customers found
                   </TableCell>
                 </TableRow>
@@ -200,12 +294,18 @@ const Customers = () => {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium text-primary">
-                          {customer.fullName.split(' ').map(n => n[0]).join('')}
+                          {customer.fullName
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
                         </div>
                         <div>
                           <p className="font-medium">{customer.fullName}</p>
                           {customer.isRepeat && (
-                            <Badge variant="secondary" className="text-xs mt-0.5">
+                            <Badge
+                              variant="secondary"
+                              className="text-xs mt-0.5"
+                            >
                               <Star className="h-3 w-3 mr-1" />
                               Repeat
                             </Badge>
@@ -218,23 +318,31 @@ const Customers = () => {
                         {customer.email ? (
                           <p className="text-sm">{customer.email}</p>
                         ) : (
-                          <p className="text-sm text-muted-foreground italic">No email</p>
+                          <p className="text-sm text-muted-foreground italic">
+                            No email
+                          </p>
                         )}
-                        <p className="text-xs text-muted-foreground">{customer.whatsapp}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {customer.whatsapp}
+                        </p>
                       </div>
                     </TableCell>
-                    <TableCell className="font-medium">{customer.bookingCount}</TableCell>
-                    <TableCell className="font-medium">R{customer.totalSpend.toLocaleString()}</TableCell>
+                    <TableCell className="font-medium">
+                      {customer.bookingCount}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      R{customer.totalSpend.toLocaleString()}
+                    </TableCell>
                     <TableCell>
                       {customer.lastVisit ? (
-                        format(customer.lastVisit, 'dd MMM yyyy')
+                        format(customer.lastVisit, "dd MMM yyyy")
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         size="sm"
                         onClick={() => {
                           setSelectedCustomer(customer);
@@ -260,10 +368,15 @@ const Customers = () => {
               <SheetHeader className="space-y-1">
                 <div className="flex items-center gap-3">
                   <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-lg font-medium text-primary">
-                    {selectedCustomer.fullName.split(' ').map(n => n[0]).join('')}
+                    {selectedCustomer.fullName
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
                   </div>
                   <div>
-                    <SheetTitle className="text-xl">{selectedCustomer.fullName}</SheetTitle>
+                    <SheetTitle className="text-xl">
+                      {selectedCustomer.fullName}
+                    </SheetTitle>
                     {selectedCustomer.isRepeat && (
                       <Badge variant="secondary" className="text-xs mt-1">
                         <Star className="h-3 w-3 mr-1" />
@@ -304,18 +417,27 @@ const Customers = () => {
                 {/* Stats */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-muted/50 rounded-lg p-4 text-center">
-                    <p className="text-2xl font-bold">{selectedCustomer.bookingCount}</p>
-                    <p className="text-xs text-muted-foreground">Total Bookings</p>
+                    <p className="text-2xl font-bold">
+                      {selectedCustomer.bookingCount}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Total Bookings
+                    </p>
                   </div>
                   <div className="bg-muted/50 rounded-lg p-4 text-center">
-                    <p className="text-2xl font-bold">R{selectedCustomer.totalSpend.toLocaleString()}</p>
+                    <p className="text-2xl font-bold">
+                      R{selectedCustomer.totalSpend.toLocaleString()}
+                    </p>
                     <p className="text-xs text-muted-foreground">Total Spend</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3 text-sm">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>Customer since {format(selectedCustomer.createdAt, 'MMMM yyyy')}</span>
+                  <span>
+                    Customer since{" "}
+                    {format(selectedCustomer.createdAt, "MMMM yyyy")}
+                  </span>
                 </div>
 
                 <Separator />
@@ -326,21 +448,30 @@ const Customers = () => {
                     Booking History
                   </h3>
                   {customerBookings.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No bookings found</p>
+                    <p className="text-sm text-muted-foreground">
+                      No bookings found
+                    </p>
                   ) : (
                     <div className="space-y-3">
                       {customerBookings.map((booking) => (
-                        <div 
+                        <div
                           key={booking.id}
                           className="p-3 border rounded-lg space-y-2"
                         >
                           <div className="flex items-center justify-between">
-                            <p className="font-mono text-sm font-medium">{booking.registration}</p>
+                            <p className="font-mono text-sm font-medium">
+                              {booking.registration}
+                            </p>
                             <StatusBadge status={booking.status} />
                           </div>
                           <div className="flex items-center justify-between text-sm text-muted-foreground">
-                            <span>{format(booking.departureDate, 'dd MMM')} - {format(booking.arrivalDate, 'dd MMM yyyy')}</span>
-                            <span className="font-medium text-foreground">R{booking.cost}</span>
+                            <span>
+                              {format(booking.departureDate, "dd MMM")} -{" "}
+                              {format(booking.arrivalDate, "dd MMM yyyy")}
+                            </span>
+                            <span className="font-medium text-foreground">
+                              R{booking.cost}
+                            </span>
                           </div>
                         </div>
                       ))}

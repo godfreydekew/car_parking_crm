@@ -61,7 +61,7 @@ const Operations = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">Operations</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Cars On Site</h1>
         <p className="text-muted-foreground">Vehicle monitoring and management</p>
       </div>
 

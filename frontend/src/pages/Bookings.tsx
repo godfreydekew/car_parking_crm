@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useCRM } from "@/context/CRMContext";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
@@ -27,8 +27,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
-import { Search, Filter, Download, MoreHorizontal, Eye, LogIn, CheckCircle2, FileText } from "lucide-react";
+import { Search, Filter, MoreHorizontal, Eye, LogIn, CheckCircle2, FileText } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
+
+const ITEMS_PER_PAGE = 20;
 
 const Bookings = () => {
   const { bookings, checkInBooking, collectBooking, isLoading, error } = useCRM();
@@ -38,8 +49,9 @@ const Bookings = () => {
   const [flightFilter, setFlightFilter] = useState<string>("all");
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // Filter bookings client-side (can be moved to server-side later)
+  // Filter bookings client-side
   const filteredBookings = useMemo(() => {
     return bookings.filter(booking => {
       const matchesSearch = searchQuery === "" || 
@@ -55,6 +67,24 @@ const Bookings = () => {
       return matchesSearch && matchesStatus && matchesPayment && matchesFlight;
     });
   }, [bookings, searchQuery, statusFilter, paymentFilter, flightFilter]);
+
+  // Paginate filtered bookings
+  const totalPages = Math.ceil(filteredBookings.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedBookings = filteredBookings.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, paymentFilter, flightFilter]);
+
+  // Update page when total pages changes
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(1);
+    }
+  }, [totalPages, currentPage]);
 
   const handleViewBooking = (booking: Booking) => {
     setSelectedBooking(booking);
@@ -93,13 +123,6 @@ const Bookings = () => {
     }
   };
 
-  const handleExport = () => {
-    toast({
-      title: "Export started",
-      description: "Your CSV export is being prepared...",
-    });
-  };
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -118,15 +141,9 @@ const Bookings = () => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground">Bookings</h1>
-          <p className="text-muted-foreground">Manage all parking reservations</p>
-        </div>
-        <Button onClick={handleExport} variant="outline" className="gap-2">
-          <Download className="h-4 w-4" />
-          Export CSV
-        </Button>
+      <div>
+        <h1 className="text-2xl font-semibold text-foreground">Bookings</h1>
+        <p className="text-muted-foreground">Manage all parking reservations</p>
       </div>
 
       {/* Filters */}
@@ -186,12 +203,12 @@ const Bookings = () => {
 
       {/* Mobile Cards */}
       <div className="space-y-3 md:hidden">
-        {filteredBookings.length === 0 ? (
+        {paginatedBookings.length === 0 ? (
           <p className="text-center py-12 text-muted-foreground">
             No bookings found matching your criteria
           </p>
         ) : (
-          filteredBookings.map((booking) => (
+          paginatedBookings.map((booking) => (
             <div key={booking.id} className="border rounded-lg p-4 bg-card space-y-3">
               <div className="flex items-start justify-between">
                 <div>
@@ -206,11 +223,11 @@ const Bookings = () => {
               </div>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div>
-                  <p className="text-muted-foreground text-xs">Departure</p>
+                  <p className="text-muted-foreground text-xs">Drop-off</p>
                   <p>{format(booking.departureDate, 'dd MMM')} {booking.departureTime}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground text-xs">Arrival</p>
+                  <p className="text-muted-foreground text-xs">Pick-up</p>
                   <p>{format(booking.arrivalDate, 'dd MMM')} {booking.arrivalTime}</p>
                 </div>
               </div>
@@ -262,8 +279,8 @@ const Bookings = () => {
               <TableRow className="bg-muted/50">
                 <TableHead>Customer</TableHead>
                 <TableHead>Vehicle</TableHead>
-                <TableHead>Departure</TableHead>
-                <TableHead>Arrival</TableHead>
+                <TableHead>Drop-off</TableHead>
+                <TableHead>Pick-up</TableHead>
                 <TableHead>Flight</TableHead>
                 <TableHead>Payment</TableHead>
                 <TableHead>Cost</TableHead>
@@ -272,14 +289,14 @@ const Bookings = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredBookings.length === 0 ? (
+              {paginatedBookings.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={9} className="text-center py-12 text-muted-foreground">
                     No bookings found matching your criteria
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredBookings.map((booking) => (
+                paginatedBookings.map((booking) => (
                   <TableRow key={booking.id} className="group">
                     <TableCell>
                       <div>
@@ -355,6 +372,72 @@ const Bookings = () => {
           </Table>
         </div>
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentPage((prev) => Math.max(1, prev - 1));
+                }}
+                className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+              />
+            </PaginationItem>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+              // Show first page, last page, current page, and pages around current
+              if (
+                page === 1 ||
+                page === totalPages ||
+                (page >= currentPage - 1 && page <= currentPage + 1)
+              ) {
+                return (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(page);
+                      }}
+                      isActive={currentPage === page}
+                      className="cursor-pointer"
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              } else if (page === currentPage - 2 || page === currentPage + 2) {
+                return (
+                  <PaginationItem key={page}>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                );
+              }
+              return null;
+            })}
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+                }}
+                className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
+
+      {/* Page info */}
+      {filteredBookings.length > 0 && (
+        <div className="text-sm text-muted-foreground text-center">
+          Showing {startIndex + 1} to {Math.min(endIndex, filteredBookings.length)} of {filteredBookings.length} bookings
+        </div>
+      )}
 
       <BookingDetailDrawer
         booking={selectedBooking}

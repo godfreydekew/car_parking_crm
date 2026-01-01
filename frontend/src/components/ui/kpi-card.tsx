@@ -26,21 +26,21 @@ export const KPICard: React.FC<KPICardProps> = ({
   return (
     <div
       className={cn(
-        "bg-card border border-border rounded-lg p-5 transition-all duration-200 hover:shadow-md animate-fade-in",
+        "bg-card border border-border rounded-lg p-4 sm:p-5 transition-all duration-200 hover:shadow-md animate-fade-in h-full flex flex-col",
         className
       )}
     >
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <p className="mt-2 text-3xl font-semibold text-foreground tracking-tight">
+      <div className="flex items-start justify-between flex-1">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">{title}</p>
+          <p className="mt-1 sm:mt-2 text-2xl sm:text-3xl font-semibold text-foreground tracking-tight">
             {value}
           </p>
           {subtitle && (
-            <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
+            <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-muted-foreground line-clamp-1">{subtitle}</p>
           )}
           {trend && (
-            <div className="mt-2 flex items-center gap-1">
+            <div className="mt-1 sm:mt-2 flex items-center gap-1">
               <span
                 className={cn(
                   "text-xs font-medium",
@@ -55,11 +55,11 @@ export const KPICard: React.FC<KPICardProps> = ({
         </div>
         <div
           className={cn(
-            "p-2.5 rounded-lg bg-primary/10",
+            "p-2 sm:p-2.5 rounded-lg bg-primary/10 flex-shrink-0 ml-2",
             iconClassName
           )}
         >
-          <Icon className="h-5 w-5 text-primary" />
+          <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
         </div>
       </div>
     </div>
