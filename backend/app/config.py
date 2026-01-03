@@ -27,7 +27,8 @@ class Settings(BaseSettings):
     # SQLite database URL (defaults to backend/airport_crm.db)
     # Can be overridden via .env file or DATABASE_URL environment variable
     DATABASE_URL: str = f"sqlite:///{_DEFAULT_DB_PATH}"
-    AUTO_CREATE_TABLES: bool = True
+    AUTO_CREATE_TABLES: bool = False
+    # WEBHOOK_SECRET: str
 
 
 settings = Settings()

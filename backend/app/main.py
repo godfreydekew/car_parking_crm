@@ -8,6 +8,7 @@ from .config import settings
 from .db import create_tables
 from .routes import csv_import
 from .routes.bookings import booking_routes
+from .routes.bookings import webhook
 
 
 app = FastAPI(
@@ -27,6 +28,7 @@ app.add_middleware(
 # Register routes
 app.include_router(csv_import.router)
 app.include_router(booking_routes.router)
+app.include_router(webhook.router)
 
 
 @app.on_event("startup")
@@ -40,3 +42,8 @@ def on_startup():
 def health():
     """Health check endpoint."""
     return {"status": "ok", "env": settings.ENV}
+
+@app.get("/")
+def root():
+    """Root endpoint."""
+    return {"message": "Welcome to the Airport CRM Backend API"}
