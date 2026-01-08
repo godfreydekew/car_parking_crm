@@ -1,7 +1,5 @@
 /**
  * Bookings API functions
- * 
- * Functions are named to match the backend endpoints they call.
  */
 import { apiGet, apiPatch, apiPost } from './client';
 import { Booking } from '@/types/crm';

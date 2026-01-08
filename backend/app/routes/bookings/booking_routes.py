@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Body
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
+from app.db import get_db
 from ...db import get_db
 from ...shemas import BookingOut, BookingStatus, FlightType, PaymentMethod
 from ...models import Booking as BookingModel, BookingStatus as BookingStatusEnum, FlightType as FlightTypeEnum, PaymentMethod as PaymentMethodEnum
@@ -133,7 +134,7 @@ def get_bookings(
         flight_type=flight_enum,
         search=search,
         skip=0,
-        limit=10000,  # Large limit to get all bookings
+        limit=10000, 
     )
     
     return [booking_to_out(booking) for booking in bookings]

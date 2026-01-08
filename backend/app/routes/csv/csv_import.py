@@ -7,8 +7,8 @@ from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Dict
 
-from ..db import get_db
-from ..services.csv_importer import CSVImporter, CSVImportError
+from ...db import get_db
+from ...services.csv_importer import CSVImporter, CSVImportError
 
 router = APIRouter(prefix="/api/csv", tags=["CSV Import"])
 
@@ -40,6 +40,8 @@ async def import_csv_file(
     
     Returns statistics about the import process.
     """
+    
+    print("Import CSV called")
     # Validate file type
     if not file.filename.endswith(('.csv', '.CSV')):
         raise HTTPException(

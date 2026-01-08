@@ -1,16 +1,12 @@
-"""
-Application configuration settings.
-
-Supports loading from .env file or environment variables.
-Defaults to SQLite database in backend directory.
-"""
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
+from dotenv import load_dotenv
+import os
 
-# Compute paths outside the class to avoid Pydantic field issues
+load_dotenv() 
+
 _BACKEND_DIR = Path(__file__).parent.parent
 _ENV_FILE_PATH = _BACKEND_DIR / ".env"
-_DEFAULT_DB_PATH = str(_BACKEND_DIR / "airport_crm.db")
 
 
 class Settings(BaseSettings):
@@ -24,11 +20,12 @@ class Settings(BaseSettings):
     )
 
     ENV: str = "dev"
-    # SQLite database URL (defaults to backend/airport_crm.db)
-    # Can be overridden via .env file or DATABASE_URL environment variable
-    DATABASE_URL: str = f"sqlite:///{_DEFAULT_DB_PATH}"
+    DATABASE_URL: str = os.getenv("DATABASE_URL")
     AUTO_CREATE_TABLES: bool = False
-    # WEBHOOK_SECRET: str
-
 
 settings = Settings()
+
+
+# if __name__ == "__main__":
+#     print("Environment:", settings.ENV)
+#     print("Database URL:", settings.DATABASE_URL)
