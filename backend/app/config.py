@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     ENV: str = "dev"
     DATABASE_URL: str = os.getenv("DATABASE_URL")
     AUTO_CREATE_TABLES: bool = False
+    print(DATABASE_URL)
 
 settings = Settings()
 
