@@ -12,13 +12,18 @@ from ...shemas import BookingOut, BookingStatus, FlightType, PaymentMethod
 from ...models import Booking as BookingModel, BookingStatus as BookingStatusEnum, FlightType as FlightTypeEnum, PaymentMethod as PaymentMethodEnum
 from ...services.bookings.booking_service import BookingService
 from ...services.bookings.booking_operations import BookingOperationsService
+from ...services.auth.dependencies import get_current_user
 
 
 class NoteRequest(BaseModel):
     """Request model for adding a note."""
     note: str
 
-router = APIRouter(prefix="/api/bookings", tags=["Bookings"])
+router = APIRouter(
+    prefix="/api/bookings", 
+    tags=["Bookings"],
+    dependencies=[Depends(get_current_user)]
+    )
 
 
 def booking_to_out(booking: BookingModel) -> dict:

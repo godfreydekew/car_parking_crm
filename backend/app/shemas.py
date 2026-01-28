@@ -7,6 +7,36 @@ BookingStatus = Literal["BOOKED", "ON_SITE", "COLLECTED", "OVERSTAY", "CANCELLED
 FlightType = Literal["domestic", "international"]
 PaymentMethod = Literal["cash", "eft", "card", "other"]
 
+# ---------- Users ----------
+class UserBase(BaseModel):
+    """Shared user properties"""
+    full_name: str = Field(min_length=2, max_length=120)
+    email: EmailStr = Field(min_length=2, max_length=255)
+
+
+class UserCreate(UserBase):
+    """For user registration - accepts plain password"""
+    password: str = Field(min_length=8, max_length=100)
+
+
+class UserInDB(UserBase):
+    id: int
+    password_hash: str
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True  
+
+class UserResponse(UserBase):
+    id: int
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
 
 # ---------- Customers ----------
 class CustomerBase(BaseModel):

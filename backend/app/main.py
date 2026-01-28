@@ -10,6 +10,8 @@ from .routes.csv import csv_import
 from .routes.bookings import booking_routes
 from .routes.bookings import webhook
 from .routes.db_management import database_routes
+from .routes.users import users_routes
+from .routes.users import auth
 
 
 app = FastAPI(
@@ -31,6 +33,8 @@ app.include_router(csv_import.router)
 app.include_router(booking_routes.router)
 app.include_router(webhook.router)
 app.include_router(database_routes.router)
+app.include_router(users_routes.router)
+app.include_router(auth.auth_router)
 
 
 @app.on_event("startup")

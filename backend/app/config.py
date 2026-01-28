@@ -22,11 +22,13 @@ class Settings(BaseSettings):
     ENV: str = "dev"
     DATABASE_URL: str = os.getenv("DATABASE_URL")
     AUTO_CREATE_TABLES: bool = False
+    SECRET_KEY: str = os.getenv("SECRET_KEY") 
+    ALGORITHM: str = os.getenv("ALGORITHM")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
     print(DATABASE_URL)
 
 settings = Settings()
 
-
 # if __name__ == "__main__":
-#     print("Environment:", settings.ENV)
-#     print("Database URL:", settings.DATABASE_URL)
+#     print("Environment:", settings.SECRET_KEY)
+#     print("Database URL:", settings.ALGORITHM)
