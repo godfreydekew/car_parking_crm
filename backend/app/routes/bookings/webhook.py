@@ -64,7 +64,7 @@ def receive_google_sheets_booking(
         
     # Brevo function here to send confirmation email to the customer
     try:
-        response = send_booking_confirmation_email(
+        send_booking_confirmation_email(
             email=row_dict["Email"], 
             name=row_dict["Full Names"],
             departure_date=row_dict["Departure Date"],
@@ -81,7 +81,7 @@ def receive_google_sheets_booking(
         )
     except Exception as e:
         print(f"Error sending confirmation email: {str(e)}")
+        
     # Save the booking to the database
-    print(response)
     db.commit()
     return {"status": "ok", "message": "imported", "rowNumber": row_number}
