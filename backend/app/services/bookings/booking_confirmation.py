@@ -201,6 +201,9 @@ def send_booking_confirmation_email(
             "headers": {"X-Mailer": "Airport CRM"},
         },
     )
+    
+    print("Booking confirmation email sent:", response)
+    
     return response
 
 # if __name__ == "__main__":
