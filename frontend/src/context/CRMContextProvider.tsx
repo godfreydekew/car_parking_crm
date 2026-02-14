@@ -1,6 +1,4 @@
 import React, {
-  createContext,
-  useContext,
   useState,
   useCallback,
   ReactNode,
@@ -14,25 +12,10 @@ import {
   addBookingNote as apiAddNote,
   updateBookingStatus as apiUpdateStatus,
 } from "@/lib/api/bookings";
+import { CRMContext } from "./CRMContext";
 
-interface CRMContextType {
-  bookings: Booking[];
-  customers: Customer[];
-  updateBookingStatus: (bookingId: string, status: BookingStatus) => Promise<void>;
-  checkInBooking: (bookingId: string) => Promise<void>;
-  collectBooking: (bookingId: string) => Promise<void>;
-  addBookingNote: (bookingId: string, note: string) => Promise<void>;
-  getBookingById: (bookingId: string) => Booking | undefined;
-  getCustomerById: (customerId: string) => Customer | undefined;
-  getBookingsByCustomer: (customerId: string) => Booking[];
-  searchBookings: (query: string) => Booking[];
-  isLoading: boolean;
-  error: string | null;
-}
 
-const CRMContext = createContext<CRMContextType | undefined>(undefined);
-
-const generateId = () => Math.random().toString(36).substring(2, 11);
+// const generateId = () => Math.random().toString(36).substring(2, 11);
 
 export const CRMProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -209,10 +192,3 @@ export const CRMProvider: React.FC<{ children: ReactNode }> = ({
   );
 };
 
-export const useCRM = () => {
-  const context = useContext(CRMContext);
-  if (context === undefined) {
-    throw new Error("useCRM must be used within a CRMProvider");
-  }
-  return context;
-};

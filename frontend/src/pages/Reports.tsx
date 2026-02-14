@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useCRM } from "@/context/CRMContext";
+import { useCRM } from "@/context/useCRM";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,

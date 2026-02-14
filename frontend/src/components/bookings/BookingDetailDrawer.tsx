@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Booking } from "@/types/crm";
-import { useCRM } from "@/context/CRMContext";
+import { useCRM } from "@/context/useCRM";
 import { 
   Car, 
   Calendar, 

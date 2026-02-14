@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useCRM } from "@/context/CRMContext";
+import { useCRM } from "@/context/useCRM";  
 import { KPICard } from "@/components/ui/kpi-card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
