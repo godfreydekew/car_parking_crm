@@ -35,7 +35,10 @@ const Reports = () => {
     return periods.map((days) => {
       const since = subDays(new Date(), days);
       const periodBookings = bookings.filter(
-        (b) => isAfter(b.timestamp, since) && b.status !== "CANCELLED" && b.status !== "NO_SHOW"
+        (b) =>
+          isAfter(b.timestamp, since) &&
+          b.status !== "CANCELLED" &&
+          b.status !== "NO_SHOW",
       );
       return {
         period: `${days}d`,
@@ -54,12 +57,14 @@ const Reports = () => {
   const chartData = useMemo(() => {
     if (selectedPeriod === "allTime") {
       // For all time, show monthly data
-      const allBookings = bookings.filter((b) => b.status !== "CANCELLED" && b.status !== "NO_SHOW");
+      const allBookings = bookings.filter(
+        (b) => b.status !== "CANCELLED" && b.status !== "NO_SHOW",
+      );
       if (allBookings.length === 0) return [];
 
       const oldestBooking = allBookings.reduce(
         (oldest, b) => (b.timestamp < oldest ? b.timestamp : oldest),
-        allBookings[0].timestamp
+        allBookings[0].timestamp,
       );
 
       const startDate = new Date(oldestBooking);
@@ -80,7 +85,7 @@ const Reports = () => {
             b.timestamp >= monthStart &&
             b.timestamp < monthEnd &&
             b.status !== "CANCELLED" &&
-            b.status !== "NO_SHOW"
+            b.status !== "NO_SHOW",
         );
 
         months.push({
@@ -134,7 +139,7 @@ const Reports = () => {
 
     const totalDays = completedBookings.reduce(
       (sum, b) => sum + differenceInDays(b.arrivalDate, b.departureDate),
-      0
+      0,
     );
     return Math.round((totalDays / completedBookings.length) * 10) / 10;
   }, [bookings]);
@@ -148,10 +153,13 @@ const Reports = () => {
   const flightTypeBreakdown = useMemo(() => {
     const breakdown = bookings
       .filter((b) => b.status !== "CANCELLED" && b.status !== "NO_SHOW")
-      .reduce((acc, b) => {
-        acc[b.flightType] = (acc[b.flightType] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
+      .reduce(
+        (acc, b) => {
+          acc[b.flightType] = (acc[b.flightType] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
 
     return Object.entries(breakdown).map(([type, count]) => ({
       name: type,
@@ -207,8 +215,8 @@ const Reports = () => {
                 period.period === "7d"
                   ? "7d"
                   : period.period === "30d"
-                  ? "30d"
-                  : "90d";
+                    ? "30d"
+                    : "90d";
               return (
                 <Card
                   key={period.period}
@@ -328,9 +336,15 @@ const Reports = () => {
                     R
                     {Math.round(
                       bookings
-                        .filter((b) => b.status !== "CANCELLED" && b.status !== "NO_SHOW")
+                        .filter(
+                          (b) =>
+                            b.status !== "CANCELLED" && b.status !== "NO_SHOW",
+                        )
                         .reduce((sum, b) => sum + b.cost, 0) /
-                        bookings.filter((b) => b.status !== "CANCELLED" && b.status !== "NO_SHOW").length
+                        bookings.filter(
+                          (b) =>
+                            b.status !== "CANCELLED" && b.status !== "NO_SHOW",
+                        ).length,
                     )}
                   </p>
                   <p className="text-sm text-muted-foreground">
@@ -411,7 +425,7 @@ const Reports = () => {
                     {Math.round(
                       (customers.filter((c) => c.isRepeat).length /
                         customers.length) *
-                        100
+                        100,
                     )}
                     %
                   </p>
