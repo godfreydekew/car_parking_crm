@@ -1,20 +1,21 @@
+import { useState } from "react";
 import { format } from "date-fns";
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetHeader, 
-  SheetTitle 
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Booking } from "@/types/crm";
 import { useCRM } from "@/context/useCRM";
-import { 
-  Car, 
-  Calendar, 
-  CreditCard, 
-  Mail, 
-  MessageCircle, 
+import {
+  Car,
+  Calendar,
+  CreditCard,
+  Mail,
+  MessageCircle,
   Phone,
   Plane,
   Clock,
@@ -23,9 +24,11 @@ import {
   LogIn,
   X,
   UserX,
+  FileCheck,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
+import { BookingConfirmationDialog } from "./BookingConfirmationDialog";
 
 interface BookingDetailDrawerProps {
   booking: Booking | null;
@@ -39,6 +42,7 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
   onClose,
 }) => {
   const { checkInBooking, collectBooking, updateBookingStatus } = useCRM();
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
 
   if (!booking) return null;
 
@@ -61,7 +65,7 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
 
   const handleCancel = async () => {
     try {
-      await updateBookingStatus(booking.id, 'CANCELLED');
+      await updateBookingStatus(booking.id, "CANCELLED");
       toast({
         title: "Booking cancelled",
         description: `${booking.fullName}'s booking has been cancelled.`,
@@ -78,7 +82,7 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
 
   const handleNoShow = async () => {
     try {
-      await updateBookingStatus(booking.id, 'NO_SHOW');
+      await updateBookingStatus(booking.id, "NO_SHOW");
       toast({
         title: "Marked as No Show",
         description: `${booking.fullName}'s booking has been marked as no show.`,
@@ -94,6 +98,7 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
   };
 
   return (
+    <>
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
         <SheetHeader className="space-y-1">
@@ -106,80 +111,91 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
           </p>
         </SheetHeader>
 
-        <div className="mt-6 space-y-6">
+        <div className="mt-4 space-y-4">
           {/* Quick Actions */}
-          {booking.status === 'BOOKED' && (
-            <div className="space-y-3">
-              <Button onClick={handleCheckIn} className="w-full gap-2">
+          {booking.status === "BOOKED" && (
+            <div className="space-y-2">
+              <Button onClick={handleCheckIn} className="w-full gap-2" size="sm">
                 <LogIn className="h-4 w-4" />
                 Mark Check-in
               </Button>
-              <div className="flex gap-3">
-                <Button 
-                  onClick={handleCancel} 
-                  variant="outline" 
-                  className="flex-1 gap-2 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleCancel}
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 gap-1.5 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
                 >
-                  <X className="h-4 w-4" />
-                  Mark as Cancel
+                  <X className="h-3.5 w-3.5" />
+                  Cancel
                 </Button>
-                <Button 
-                  onClick={handleNoShow} 
-                  variant="outline" 
-                  className="flex-1 gap-2 border-warning text-warning hover:bg-warning hover:text-warning-foreground"
+                <Button
+                  onClick={handleNoShow}
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 gap-1.5 border-warning text-warning hover:bg-warning hover:text-warning-foreground"
                 >
-                  <UserX className="h-4 w-4" />
+                  <UserX className="h-3.5 w-3.5" />
                   No Show
                 </Button>
               </div>
             </div>
           )}
-          {(booking.status === 'ON_SITE' || booking.status === 'OVERSTAY') && (
-            <Button onClick={handleCollect} className="w-full gap-2">
+          {(booking.status === "ON_SITE" || booking.status === "OVERSTAY") && (
+            <Button onClick={handleCollect} className="w-full gap-2" size="sm">
               <CheckCircle2 className="h-4 w-4" />
               Mark Collected
             </Button>
           )}
 
-          {/* Contact Info */}
-          <div className="space-y-3">
-            <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
-              Contact Information
-            </h3>
-            <div className="space-y-2">
-              {booking.email && (
-                <div className="flex items-center gap-3 text-sm">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span>{booking.email}</span>
-                </div>
-              )}
-              <div className="flex items-center gap-3 text-sm">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                <span>{booking.whatsapp}</span>
-              </div>
-              <Button variant="outline" size="sm" className="gap-2">
-                <MessageCircle className="h-4 w-4" />
-                WhatsApp
-              </Button>
-            </div>
-          </div>
+          {/* Confirmation Button */}
+          <Button
+            onClick={() => setConfirmationOpen(true)}
+            variant="outline"
+            size="sm"
+            className="w-full gap-2"
+          >
+            <FileCheck className="h-4 w-4" />
+            Confirmation
+          </Button>
 
           <Separator />
 
-          {/* Vehicle Info */}
-          <div className="space-y-3">
-            <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
-              Vehicle Details
-            </h3>
-            <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-              <div className="flex items-center gap-3">
-                <Car className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="font-medium">{booking.vehicleMake} {booking.vehicleModel}</p>
-                  <p className="text-sm text-muted-foreground">{booking.vehicleColor}</p>
-                </div>
+          {/* Customer & Vehicle Card */}
+          <div className="rounded-lg border bg-muted/20 overflow-hidden">
+            {/* Customer header with name prominent */}
+            <div className="px-3.5 py-3 border-b bg-muted/30">
+              <p className="font-semibold text-sm">{booking.fullName}</p>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-xs text-muted-foreground">
+                {booking.email && (
+                  <a
+                    href={`mailto:${booking.email}`}
+                    className="flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer"
+                  >
+                    <Mail className="h-3 w-3" />
+                    {booking.email}
+                  </a>
+                )}
+                <a
+                  href={`tel:${booking.whatsapp}`}
+                  className="flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer"
+                >
+                  <Phone className="h-3 w-3" />
+                  {booking.whatsapp}
+                </a>
               </div>
-              <div className="text-lg font-mono font-bold text-center py-2 bg-background rounded border">
+            </div>
+
+            {/* Vehicle section */}
+            <div className="px-3.5 py-3 flex items-center gap-3">
+              <Car className="h-4 w-4 text-muted-foreground shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium">
+                  {booking.vehicleMake} {booking.vehicleModel}
+                  <span className="text-muted-foreground font-normal"> · {booking.vehicleColor}</span>
+                </p>
+              </div>
+              <div className="font-mono text-sm font-bold px-2.5 py-1 bg-background rounded border shrink-0">
                 {booking.registration}
               </div>
             </div>
@@ -187,84 +203,76 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
 
           <Separator />
 
-          {/* Flight Info */}
-          <div className="space-y-3">
-            <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
+          {/* Flight Details - compact grid */}
+          <div className="space-y-2">
+            <h3 className="font-medium text-xs text-muted-foreground uppercase tracking-wide">
               Flight Details
             </h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Plane className="h-4 w-4" />
-                  <span className="text-xs uppercase">Departure</span>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-muted/30 rounded-md p-2.5">
+                <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
+                  <Plane className="h-3.5 w-3.5" />
+                  <span className="text-[10px] uppercase font-medium">Drop-off</span>
                 </div>
-                <p className="font-medium">{format(booking.departureDate, 'dd MMM yyyy')}</p>
-                <p className="text-sm text-muted-foreground">{booking.departureTime}</p>
+                <p className="text-sm font-medium">
+                  {format(booking.departureDate, "dd MMM yyyy")}
+                </p>
+                <p className="text-xs text-muted-foreground">{booking.departureTime}</p>
               </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Plane className="h-4 w-4 rotate-90" />
-                  <span className="text-xs uppercase">Arrival</span>
+              <div className="bg-muted/30 rounded-md p-2.5">
+                <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
+                  <Plane className="h-3.5 w-3.5 rotate-90" />
+                  <span className="text-[10px] uppercase font-medium">Pick-up</span>
                 </div>
-                <p className="font-medium">{format(booking.arrivalDate, 'dd MMM yyyy')}</p>
-                <p className="text-sm text-muted-foreground">{booking.arrivalTime}</p>
+                <p className="text-sm font-medium">
+                  {format(booking.arrivalDate, "dd MMM yyyy")}
+                </p>
+                <p className="text-xs text-muted-foreground">{booking.arrivalTime}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs px-2 py-1 bg-muted rounded font-medium">
-                {booking.flightType}
-              </span>
-            </div>
+            <span className="text-xs px-2 py-0.5 bg-muted rounded font-medium inline-block">
+              {booking.flightType}
+            </span>
           </div>
 
           <Separator />
 
-          {/* Payment */}
-          <div className="space-y-3">
-            <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
-              Payment
-            </h3>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <CreditCard className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">{booking.paymentMethod}</span>
-              </div>
-              <span className="text-xl font-semibold">R{booking.cost}</span>
+          {/* Payment - inline */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <CreditCard className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm">{booking.paymentMethod}</span>
             </div>
+            <span className="text-lg font-semibold">R{booking.cost}</span>
           </div>
 
           {booking.specialInstructions && (
             <>
               <Separator />
-              <div className="space-y-3">
-                <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
-                  Special Instructions
-                </h3>
-                <div className="flex items-start gap-3 p-3 bg-warning/10 rounded-lg border border-warning/20">
-                  <FileText className="h-4 w-4 text-warning mt-0.5" />
-                  <p className="text-sm">{booking.specialInstructions}</p>
-                </div>
+              <div className="flex items-start gap-2 p-2.5 bg-warning/10 rounded-md border border-warning/20">
+                <FileText className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" />
+                <p className="text-xs">{booking.specialInstructions}</p>
               </div>
             </>
           )}
 
           <Separator />
 
-          {/* Activity Log */}
-          <div className="space-y-3">
-            <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
+          {/* Activity Log - compact */}
+          <div className="space-y-2">
+            <h3 className="font-medium text-xs text-muted-foreground uppercase tracking-wide">
               Activity Log
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {booking.activity
                 .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
                 .map((event) => (
-                  <div key={event.id} className="flex gap-3 text-sm">
-                    <Clock className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                  <div key={event.id} className="flex gap-2 text-xs">
+                    <Clock className="h-3.5 w-3.5 text-muted-foreground mt-0.5 shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p>{event.description}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {format(event.timestamp, 'dd MMM yyyy, HH:mm')}
+                      <p className="text-sm">{event.description}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {format(event.timestamp, "dd MMM yyyy, HH:mm")}
                         {event.user && ` • ${event.user}`}
                       </p>
                     </div>
@@ -275,5 +283,12 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
         </div>
       </SheetContent>
     </Sheet>
+
+    <BookingConfirmationDialog
+      booking={booking}
+      open={confirmationOpen}
+      onClose={() => setConfirmationOpen(false)}
+    />
+    </>
   );
 };

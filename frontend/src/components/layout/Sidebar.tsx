@@ -54,7 +54,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
               <PlaneTakeoff className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-semibold text-sidebar-foreground">ParkFly CRM</span>
+            <span className="font-semibold text-sidebar-foreground">OR Tambo Parking</span>
           </div>
           <Button
             variant="ghost"
