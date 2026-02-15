@@ -2,11 +2,12 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@/context/ThemeContextProvider";
 import { CRMProvider } from "@/context/CRMContextProvider"; 
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import Dashboard from "./pages/Dashboard";
 import Bookings from "./pages/Bookings";
 import CheckInOut from "./pages/CheckInOut";
@@ -21,21 +22,28 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) return <LoadingSpinner fullScreen message="Authenticating..." />;
   
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
   
   return <>{children}</>;
 }
 
 function AppRoutes() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
+  const from = (location.state as { from?: string })?.from || "/check-in-out";
+
+  if (loading) return <LoadingSpinner fullScreen message="Authenticating..." />;
 
   return (
     <Routes>
-      <Route path="/login" element={isAuthenticated ? <Navigate to="/check-in-out" replace /> : <Login />} />
+      <Route path="/login" element={isAuthenticated ? <Navigate to={from} replace /> : <Login />} />
       <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/check-in-out" element={<CheckInOut />} />
