@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useCRM } from "@/context/useCRM";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,10 +36,13 @@ import { Separator } from "@/components/ui/separator";
 
 type CustomerFilter = 'all' | 'repeat' | 'cancelled';
 
+const ITEMS_PER_PAGE = 10;
+
 const Customers = () => {
   const { customers, bookings, getBookingsByCustomer } = useCRM();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<CustomerFilter>('all');
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
     null
   );
@@ -73,6 +77,18 @@ const Customers = () => {
 
     return filtered;
   }, [customers, searchQuery, activeFilter, getBookingsByCustomer]);
+
+  // Reset to page 1 when filters change
+  const totalPages = Math.ceil(filteredCustomers.length / ITEMS_PER_PAGE);
+  const paginatedCustomers = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredCustomers.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredCustomers, currentPage]);
+
+  // Reset page when filters/search change
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [searchQuery, activeFilter]);
 
   const repeatCustomers = useMemo(
     () => customers.filter((c) => c.isRepeat).length,
@@ -204,7 +220,7 @@ const Customers = () => {
             No customers found
           </p>
         ) : (
-          filteredCustomers.map((customer) => (
+          paginatedCustomers.map((customer) => (
             <div
               key={customer.id}
               className="border rounded-lg p-4 bg-card space-y-3"
@@ -289,7 +305,7 @@ const Customers = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredCustomers.map((customer) => (
+                paginatedCustomers.map((customer) => (
                   <TableRow key={customer.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -360,7 +376,36 @@ const Customers = () => {
         </div>
       </div>
 
-      {/* Customer Detail Drawer */}
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between pt-2">
+          <p className="text-sm text-muted-foreground">
+            Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, filteredCustomers.length)} of {filteredCustomers.length}
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-sm font-medium">
+              {currentPage} / {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
         <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
           {selectedCustomer && (

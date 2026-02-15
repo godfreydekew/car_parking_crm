@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useCRM } from "@/context/useCRM";  
 import { KPICard } from "@/components/ui/kpi-card";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +29,7 @@ import { format, isToday } from "date-fns";
 type ActiveView = 'carsOnSite' | 'arrivalsToday' | 'pickupsToday' | 'overstays' | 'bookedToday';
 
 const Dashboard = () => {
-  const { bookings, collectBooking } = useCRM();
+  const { bookings, collectBooking, isLoading } = useCRM();
   const [activeView, setActiveView] = useState<ActiveView>('carsOnSite');
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -67,6 +68,10 @@ const Dashboard = () => {
         return [];
     }
   }, [bookings, activeView]);
+
+  if (isLoading) {
+    return <LoadingSpinner message="Loading dashboard..." />;
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">

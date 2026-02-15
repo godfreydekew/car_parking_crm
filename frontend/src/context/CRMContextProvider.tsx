@@ -11,22 +11,30 @@ import {
   collectBooking as apiCollect,
   addBookingNote as apiAddNote,
   updateBookingStatus as apiUpdateStatus,
+  updateBooking as apiUpdateBooking,
+  UpdateBookingParams,
 } from "@/lib/api/bookings";
 import { CRMContext } from "./CRMContext";
-
-
-// const generateId = () => Math.random().toString(36).substring(2, 11);
+import { useAuth } from "./AuthContext";
 
 export const CRMProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
+  const { isAuthenticated } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch bookings on mount
+  // Fetch bookings on mount and when auth state changes
   useEffect(() => {
+    if (!isAuthenticated) {
+      setBookings([]);
+      setCustomers([]);
+      setIsLoading(false);
+      return;
+    }
+
     const fetchBookings = async () => {
       try {
         setIsLoading(true);
@@ -40,7 +48,6 @@ export const CRMProvider: React.FC<{ children: ReactNode }> = ({
             const customerBookings = fetchedBookings.filter(
               (b) => b.customerId === booking.customerId
             );
-            // Exclude cancelled and no show bookings from total spend
             const totalSpend = customerBookings
               .filter((b) => b.status !== "CANCELLED" && b.status !== "NO_SHOW")
               .reduce((sum, b) => sum + b.cost, 0);
@@ -71,7 +78,7 @@ export const CRMProvider: React.FC<{ children: ReactNode }> = ({
     };
 
     fetchBookings();
-  }, []);
+  }, [isAuthenticated]);
 
   const updateBookingStatus = useCallback(
     async (bookingId: string, status: BookingStatus) => {
@@ -135,6 +142,24 @@ export const CRMProvider: React.FC<{ children: ReactNode }> = ({
     []
   );
 
+  const updateBooking = useCallback(
+    async (bookingId: string, data: UpdateBookingParams): Promise<Booking> => {
+      try {
+        const updatedBooking = await apiUpdateBooking(bookingId, data);
+        setBookings((prev) =>
+          prev.map((booking) =>
+            booking.id === bookingId ? updatedBooking : booking
+          )
+        );
+        return updatedBooking;
+      } catch (err) {
+        console.error("Error updating booking:", err);
+        throw err;
+      }
+    },
+    []
+  );
+
   const getBookingById = useCallback(
     (bookingId: string) => {
       return bookings.find((b) => b.id === bookingId);
@@ -179,6 +204,7 @@ export const CRMProvider: React.FC<{ children: ReactNode }> = ({
         checkInBooking,
         collectBooking,
         addBookingNote,
+        updateBooking,
         getBookingById,
         getCustomerById,
         getBookingsByCustomer,

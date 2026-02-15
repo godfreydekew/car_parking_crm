@@ -46,7 +46,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       <aside
         className={cn(
           "fixed left-0 top-0 z-50 h-full w-64 bg-sidebar border-r border-sidebar-border transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto flex flex-col",
-          isOpen ? "translate-x-0" : "-translate-x-full"
+          isOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
         <div className="h-14 border-b border-sidebar-border px-4 flex items-center justify-between shrink-0">
@@ -54,7 +54,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
               <PlaneTakeoff className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-semibold text-sidebar-foreground">OR Tambo Parking</span>
+            <span className="font-semibold text-sidebar-foreground">
+              OR Tambo Parking
+            </span>
           </div>
           <Button
             variant="ghost"
@@ -78,7 +80,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                   isActive
                     ? "bg-sidebar-accent text-sidebar-primary"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 )}
               >
                 <item.icon className="h-5 w-5" />
@@ -94,8 +96,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               AD
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-sidebar-foreground truncate">Admin User</p>
-              <p className="text-xs text-muted-foreground truncate">admin@parkfly.co.za</p>
+              <p className="text-sm font-medium text-sidebar-foreground truncate">
+                Admin User
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                admin@parkfly.co.za
+              </p>
             </div>
           </div>
         </div>

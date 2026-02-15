@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Car, Sun, Moon, Loader2, AlertCircle } from 'lucide-react';
+import { PlaneTakeoff, Sun, Moon, Loader2, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function Login() {
@@ -54,19 +54,22 @@ export default function Login() {
         <div className="relative z-10 flex flex-col justify-center px-16 text-primary-foreground">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-14 h-14 bg-primary-foreground/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-              <Car className="h-8 w-8" />
+              <PlaneTakeoff className="h-8 w-8" />
             </div>
-            <span className="text-3xl font-bold tracking-tight">ParkCRM</span>
+            <div>
+              <span className="text-2xl font-bold tracking-tight">OR Tambo</span>
+              <p className="text-sm text-primary-foreground/70">Premium Parking</p>
+            </div>
           </div>
           
           <h1 className="text-5xl font-bold leading-tight mb-6">
-            Airport Parking<br />
-            <span className="text-primary-foreground/80">Management System</span>
+            Secure Airport<br />
+            <span className="text-primary-foreground/80">Parking Management</span>
           </h1>
           
           <p className="text-lg text-primary-foreground/70 max-w-md leading-relaxed">
-            Streamline your parking operations with real-time tracking, 
-            automated check-ins, and comprehensive customer management.
+            Secure, convenient parking with complete peace of mind. 
+            Manage operations, bookings, and customers all in one place.
           </p>
 
           {/* Feature highlights */}
@@ -82,7 +85,7 @@ export default function Login() {
 
         {/* Decorative car silhouettes */}
         <div className="absolute bottom-0 right-0 opacity-5">
-          <Car className="w-96 h-96 -rotate-12" />
+          <PlaneTakeoff className="w-96 h-96 -rotate-12" />
         </div>
       </div>
 
@@ -106,9 +109,9 @@ export default function Login() {
             {/* Mobile logo */}
             <div className="lg:hidden flex items-center justify-center gap-2 mb-8">
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <Car className="h-6 w-6 text-primary-foreground" />
+                <PlaneTakeoff className="h-6 w-6 text-primary-foreground" />
               </div>
-              <span className="text-2xl font-bold text-foreground">ParkCRM</span>
+              <span className="text-2xl font-bold text-foreground">OR Tambo Parking</span>
             </div>
 
             <Card className="border-border/50 shadow-xl">
@@ -172,7 +175,7 @@ export default function Login() {
             </Card>
 
             <p className="text-center text-xs text-muted-foreground mt-6">
-              © 2026 ParkCRM. All rights reserved.
+              © 2026 OR Tambo Premium Parking. All rights reserved.
             </p>
           </div>
         </div>
