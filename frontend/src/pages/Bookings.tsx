@@ -4,6 +4,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BookingDetailDrawer } from "@/components/bookings/BookingDetailDrawer";
+import { BookingConfirmationDialog } from "@/components/bookings/BookingConfirmationDialog";
 import { Booking, BookingStatus, PaymentMethod, FlightType } from "@/types/crm";
 import {
   Table,
@@ -27,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
-import { Search, Filter, MoreHorizontal, Eye, LogIn, CheckCircle2, FileText } from "lucide-react";
+import { Search, Filter, MoreHorizontal, Eye, LogIn, CheckCircle2, FileText, FileCheck } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   Pagination,
@@ -49,6 +50,8 @@ const Bookings = () => {
   const [flightFilter, setFlightFilter] = useState<string>("all");
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [confirmationBooking, setConfirmationBooking] = useState<Booking | null>(null);
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
   // Filter bookings client-side
@@ -89,6 +92,11 @@ const Bookings = () => {
   const handleViewBooking = (booking: Booking) => {
     setSelectedBooking(booking);
     setDrawerOpen(true);
+  };
+
+  const handleConfirmation = (booking: Booking) => {
+    setConfirmationBooking(booking);
+    setConfirmationOpen(true);
   };
 
   const handleCheckIn = async (booking: Booking) => {
@@ -263,6 +271,10 @@ const Bookings = () => {
                       <FileText className="h-4 w-4 mr-2" />
                       Add Note
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleConfirmation(booking)}>
+                      <FileCheck className="h-4 w-4 mr-2" />
+                      Confirmation
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -362,6 +374,10 @@ const Bookings = () => {
                             <FileText className="h-4 w-4 mr-2" />
                             Add Note
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleConfirmation(booking)}>
+                            <FileCheck className="h-4 w-4 mr-2" />
+                            Confirmation
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -443,6 +459,12 @@ const Bookings = () => {
         booking={selectedBooking}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
+      />
+
+      <BookingConfirmationDialog
+        booking={confirmationBooking}
+        open={confirmationOpen}
+        onClose={() => setConfirmationOpen(false)}
       />
     </div>
   );

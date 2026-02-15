@@ -141,6 +141,41 @@ export async function updateBookingStatus(
 }
 
 /**
+ * POST /api/bookings/{booking_id}/update
+ * Update editable booking fields
+ */
+export interface UpdateBookingParams {
+  pickup_at?: string;
+  payment_method?: string;
+  special_instructions?: string;
+  cost?: number;
+  status?: string;
+}
+
+export async function updateBooking(
+  bookingId: string,
+  data: UpdateBookingParams
+): Promise<Booking> {
+  const booking = await apiPost<Booking>(
+    `/api/bookings/${bookingId}/update`,
+    data
+  );
+
+  return {
+    ...booking,
+    timestamp: new Date(booking.timestamp),
+    departureDate: new Date(booking.departureDate),
+    arrivalDate: new Date(booking.arrivalDate),
+    checkInTime: booking.checkInTime ? new Date(booking.checkInTime) : undefined,
+    collectedTime: booking.collectedTime ? new Date(booking.collectedTime) : undefined,
+    activity: booking.activity.map(activity => ({
+      ...activity,
+      timestamp: new Date(activity.timestamp),
+    })),
+  };
+}
+
+/**
  * POST /api/bookings/{booking_id}/notes
  * Add a note to a booking
  */
