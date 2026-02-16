@@ -284,9 +284,9 @@ class CSVImporter:
             
             # Parse dates and times
             departure_date = row.get("Departure Date", "")
-            dropoff_time = row.get("Vehicle Drop off Time ", "").strip()
+            dropoff_time = row.get("Vehicle Drop off Time", "").strip()
             arrival_date = row.get("Arrival Date", "")
-            pickup_time = row.get("Vehicle Pick -up Time ", "").strip()
+            pickup_time = row.get("Vehicle Pick -up Time", "").strip()
             
             dropoff_at = self.parse_datetime(departure_date, dropoff_time)
             pickup_at = self.parse_datetime(arrival_date, pickup_time)
