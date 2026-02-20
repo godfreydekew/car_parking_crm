@@ -45,7 +45,7 @@ export const InvoiceDialog: React.FC<InvoiceDialogProps> = ({
       const days = Math.max(
         1,
         Math.ceil(
-          (new Date(booking.arrivalDate).getTime() - new Date(booking.departureDate).getTime()) /
+          (new Date(booking.arrivalDate).getTime() - new Date(booking.departureDate).getTime() + 1) /
             (1000 * 60 * 60 * 24)
         )
       );
