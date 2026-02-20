@@ -1,6 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel, Field, EmailStr
-from typing import Optional, Literal
+from typing import Optional, Literal, List
 
 
 BookingStatus = Literal["BOOKED", "ON_SITE", "COLLECTED", "OVERSTAY", "CANCELLED", "NO_SHOW"]
@@ -113,3 +113,16 @@ class BookingOut(BookingBase):
 
     class Config:
         from_attributes = True
+
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+    
+class ChatRequest(BaseModel):
+    message: str
+    history: List[ChatMessage] = []
+    
+class ChatResponse(BaseModel):
+    answer: str
+    sql_used: str
+    row_count: int
