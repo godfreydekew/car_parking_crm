@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BookingDetailDrawer } from "@/components/bookings/BookingDetailDrawer";
 import { BookingConfirmationDialog } from "@/components/bookings/BookingConfirmationDialog";
+import { InvoiceDialog } from "@/components/bookings/InvoiceDialog";
 import { Booking, BookingStatus, PaymentMethod, FlightType } from "@/types/crm";
 import {
   Table,
@@ -28,7 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
-import { Search, Filter, MoreHorizontal, Eye, LogIn, CheckCircle2, FileText, FileCheck } from "lucide-react";
+import { Search, Filter, MoreHorizontal, Eye, LogIn, CheckCircle2, FileText, FileCheck, Receipt } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   Pagination,
@@ -52,6 +53,8 @@ const Bookings = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [confirmationBooking, setConfirmationBooking] = useState<Booking | null>(null);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [invoiceBooking, setInvoiceBooking] = useState<Booking | null>(null);
+  const [invoiceOpen, setInvoiceOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
   // Filter bookings client-side
@@ -97,6 +100,11 @@ const Bookings = () => {
   const handleConfirmation = (booking: Booking) => {
     setConfirmationBooking(booking);
     setConfirmationOpen(true);
+  };
+
+  const handleInvoice = (booking: Booking) => {
+    setInvoiceBooking(booking);
+    setInvoiceOpen(true);
   };
 
   const handleCheckIn = async (booking: Booking) => {
@@ -275,6 +283,10 @@ const Bookings = () => {
                       <FileCheck className="h-4 w-4 mr-2" />
                       Confirmation
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleInvoice(booking)}>
+                      <Receipt className="h-4 w-4 mr-2" />
+                      Invoice
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -378,6 +390,10 @@ const Bookings = () => {
                             <FileCheck className="h-4 w-4 mr-2" />
                             Confirmation
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleInvoice(booking)}>
+                            <Receipt className="h-4 w-4 mr-2" />
+                            Invoice
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -465,6 +481,12 @@ const Bookings = () => {
         booking={confirmationBooking}
         open={confirmationOpen}
         onClose={() => setConfirmationOpen(false)}
+      />
+
+      <InvoiceDialog
+        booking={invoiceBooking}
+        open={invoiceOpen}
+        onClose={() => setInvoiceOpen(false)}
       />
     </div>
   );

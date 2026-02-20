@@ -29,6 +29,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
 import { BookingConfirmationDialog } from "./BookingConfirmationDialog";
+import { InvoiceDialog } from "./InvoiceDialog";
 
 interface BookingDetailDrawerProps {
   booking: Booking | null;
@@ -43,6 +44,7 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
 }) => {
   const { checkInBooking, collectBooking, updateBookingStatus } = useCRM();
   const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [invoiceOpen, setInvoiceOpen] = useState(false);
 
   if (!booking) return null;
 
@@ -157,6 +159,17 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
           >
             <FileCheck className="h-4 w-4" />
             Confirmation
+          </Button>
+
+          {/* Invoice Button */}
+          <Button
+            onClick={() => setInvoiceOpen(true)}
+            variant="outline"
+            size="sm"
+            className="w-full gap-2"
+          >
+            <FileText className="h-4 w-4" />
+            Invoice
           </Button>
 
           <Separator />
@@ -288,6 +301,12 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
       booking={booking}
       open={confirmationOpen}
       onClose={() => setConfirmationOpen(false)}
+    />
+
+    <InvoiceDialog
+      booking={booking}
+      open={invoiceOpen}
+      onClose={() => setInvoiceOpen(false)}
     />
     </>
   );
