@@ -62,7 +62,7 @@ OR Tambo Premium Parking had been operating for years with a fully manual workfl
 | **Voice**          | ElevenLabs API                                           |
 | **Email**          | Brevo API                                                |
 | **Infrastructure** | Docker, DigitalOcean                                     |
-| **Monitoring**     | Sentry                                                   |
+| **Code quality**   | CodeScene                                                |
 
 
 ## License
