@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Optional
 from sqlalchemy.orm import Session
 
-from ...models import Booking, BookingStatus, AuditLog, AuditEventType
+from ...models import Booking, BookingStatus, AuditLog, AuditEventType, Vehicle
 from ...shemas import BookingUpdate
 
 
@@ -182,6 +182,26 @@ class BookingOperationsService:
         
         for key, value in new_booking.model_dump(exclude_unset=True).items():
             setattr(booking, key, value)
+        db.commit()
+        db.refresh(booking)
+        return booking
+    
+    @staticmethod
+    def delete_booking(db: Session, booking_id: int) -> Optional[Booking]:
+        """
+        Delete a booking and associated records.
+        
+        Args:
+            db: Database session
+            booking_id: ID of the booking to delete
+        """
+        booking = db.query(Booking).filter(Booking.id == booking_id).first()
+        booking = db.delete(db.query(Vehicle).filter(Vehicle.id == booking.vehicle_id).first())
+        booking = db.delete(db.query(AuditLog).filter(AuditLog.booking_id == booking_id).all())
+        
+        if not booking:
+            return None
+        db.delete(booking)
         db.commit()
         db.refresh(booking)
         return booking

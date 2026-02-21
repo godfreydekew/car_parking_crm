@@ -12,6 +12,7 @@ from .routes.bookings import webhook
 from .routes.db_management import database_routes
 from .routes.users import users_routes
 from .routes.users import auth
+from .routes.chat import chat_routes
 
 
 app = FastAPI(
@@ -35,7 +36,7 @@ app.include_router(webhook.router)
 app.include_router(database_routes.router)
 app.include_router(users_routes.router)
 app.include_router(auth.auth_router)
-
+app.include_router(chat_routes.router)
 
 @app.on_event("startup")
 def on_startup():

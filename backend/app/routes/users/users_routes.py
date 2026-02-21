@@ -1,11 +1,9 @@
-from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
 from ...db import get_db
 from ...services.users.users_crud import UserService
 from ...shemas import UserCreate
-from ...services.auth.dependencies import get_current_user
 
 router = APIRouter(prefix="/api/users", tags=["User Management"])
 

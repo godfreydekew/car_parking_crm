@@ -5,7 +5,7 @@ from app.config import settings
 gemini_api_key = settings.GEMINI_API_KEY
 genai.configure(api_key=gemini_api_key)
 
-_model = "gemini-1.5-flash"
+_model = genai.GenerativeModel('gemini-2.0-flash')
 
 def generate_sql(user_message: str, history: list[dict]) -> str:
     

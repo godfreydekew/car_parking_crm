@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.db import get_db
-from ...shemas import BookingUpdate, BookingStatus, FlightType, PaymentMethod
+from ...shemas import BookingUpdate
 from ...models import Booking as BookingModel, BookingStatus as BookingStatusEnum, FlightType as FlightTypeEnum, PaymentMethod as PaymentMethodEnum
 from ...services.bookings.booking_service import BookingService
 from ...services.bookings.booking_operations import BookingOperationsService
