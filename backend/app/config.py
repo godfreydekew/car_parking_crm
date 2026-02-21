@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
     BREVO_API_KEY: str = os.getenv("BREVO_API_KEY")
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY")
+    ELEVENLABS_API_KEY: str = os.getenv("ELEVENLABS_API_KEY")
     print(DATABASE_URL)
 
 settings = Settings()

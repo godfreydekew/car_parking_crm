@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from app.db import get_db
 from app.services.chat.orchestration import handle_chat
 from app.shemas import ChatRequest, ChatResponse
-
+from app.services.chat.speech_to_text import convert_speech_to_text
 
 router = APIRouter(prefix="/api/chat", tags=["Chat"])
 
@@ -21,4 +21,17 @@ def chat(request: ChatRequest, db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=500,
             detail=f"Chat processing failed: {str(e)}",
+        )
+        
+@router.post("/speech-to-text") 
+def speech_to_text(audio_file: UploadFile = File(...)):
+    print("Speech to text conversion called")
+    try:
+        transcription = convert_speech_to_text(audio_file.file)
+        return {"transcription": transcription}
+            
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Speech to text conversion failed: {str(e)}",
         )
