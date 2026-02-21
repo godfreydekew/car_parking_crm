@@ -112,8 +112,8 @@ const Customers = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">Customers</h1>
-        <p className="text-muted-foreground">Manage your customer database</p>
+        <h1 className="text-foreground">Customers</h1>
+        <p className="text-[13px] text-muted-foreground">Manage your customer database</p>
       </div>
 
       {/* Stats */}
@@ -131,7 +131,7 @@ const Customers = () => {
               <Users className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{customers.length}</p>
+              <p className="text-2xl font-semibold">{customers.length}</p>
               <p className="text-sm text-muted-foreground">
                 All Customers
                 {activeFilter === 'all' && (
@@ -154,7 +154,7 @@ const Customers = () => {
               <Star className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{repeatCustomers}</p>
+              <p className="text-2xl font-semibold">{repeatCustomers}</p>
               <p className="text-sm text-muted-foreground">
                 Repeat Customers
                 {activeFilter === 'repeat' && (
@@ -177,7 +177,7 @@ const Customers = () => {
               <XCircle className="h-5 w-5 text-destructive" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{cancelledNoShowCount}</p>
+              <p className="text-2xl font-semibold">{cancelledNoShowCount}</p>
               <p className="text-sm text-muted-foreground">
                 Cancelled / No Show
                 {activeFilter === 'cancelled' && (
@@ -223,7 +223,7 @@ const Customers = () => {
           paginatedCustomers.map((customer) => (
             <div
               key={customer.id}
-              className="border rounded-lg p-4 bg-card space-y-3"
+              className="border border-border/60 rounded-[var(--radius)] p-4 bg-card card-surface space-y-3"
               onClick={() => {
                 setSelectedCustomer(customer);
                 setDrawerOpen(true);
@@ -281,11 +281,11 @@ const Customers = () => {
       </div>
 
       {/* Desktop Table */}
-      <div className="border rounded-lg overflow-hidden bg-card hidden md:block">
+      <div className="border border-border/60 rounded-[var(--radius)] overflow-hidden bg-card card-surface hidden md:block">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50">
+              <TableRow>
                 <TableHead>Customer</TableHead>
                 <TableHead>Contact</TableHead>
                 <TableHead>Bookings</TableHead>
@@ -435,7 +435,7 @@ const Customers = () => {
               <div className="mt-6 space-y-6">
                 {/* Contact Info */}
                 <div className="space-y-3">
-                  <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
+                  <h3 className="section-label">
                     Contact Information
                   </h3>
                   <div className="space-y-2">
@@ -462,7 +462,7 @@ const Customers = () => {
                 {/* Stats */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-muted/50 rounded-lg p-4 text-center">
-                    <p className="text-2xl font-bold">
+                    <p className="text-2xl font-semibold">
                       {selectedCustomer.bookingCount}
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -470,7 +470,7 @@ const Customers = () => {
                     </p>
                   </div>
                   <div className="bg-muted/50 rounded-lg p-4 text-center">
-                    <p className="text-2xl font-bold">
+                    <p className="text-2xl font-semibold">
                       R{selectedCustomer.totalSpend.toLocaleString()}
                     </p>
                     <p className="text-xs text-muted-foreground">Total Spend</p>
@@ -489,7 +489,7 @@ const Customers = () => {
 
                 {/* Booking History */}
                 <div className="space-y-3">
-                  <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
+                  <h3 className="section-label">
                     Booking History
                   </h3>
                   {customerBookings.length === 0 ? (
@@ -501,7 +501,7 @@ const Customers = () => {
                       {customerBookings.map((booking) => (
                         <div
                           key={booking.id}
-                          className="p-3 border rounded-lg space-y-2"
+                          className="p-3 border border-border/60 rounded-[var(--radius)] space-y-2"
                         >
                           <div className="flex items-center justify-between">
                             <p className="font-mono text-sm font-medium">

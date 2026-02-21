@@ -171,10 +171,8 @@ const Reports = () => {
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">Reports</h1>
-          <p className="text-muted-foreground">
-            Analytics and business insights
-          </p>
+          <h1 className="text-foreground">Reports</h1>
+          <p className="text-[13px] text-muted-foreground">Analytics and business insights</p>
         </div>
       </div>
 
@@ -201,7 +199,7 @@ const Reports = () => {
                   <TrendingUp className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-semibold">
                     R{allTimeRevenue.toLocaleString()}
                   </p>
                   <p className="text-sm text-muted-foreground">
@@ -232,7 +230,7 @@ const Reports = () => {
                       <TrendingUp className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold">
+                      <p className="text-2xl font-semibold">
                         R{period.revenue.toLocaleString()}
                       </p>
                       <p className="text-sm text-muted-foreground">
@@ -319,7 +317,7 @@ const Reports = () => {
                   <Clock className="h-5 w-5 text-success" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{avgStayDuration} days</p>
+                  <p className="text-2xl font-semibold">{avgStayDuration} days</p>
                   <p className="text-sm text-muted-foreground">
                     Average Stay Duration
                   </p>
@@ -332,7 +330,7 @@ const Reports = () => {
                   <CreditCard className="h-5 w-5 text-info" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-semibold">
                     R
                     {Math.round(
                       bookings
@@ -408,7 +406,7 @@ const Reports = () => {
                   <Users className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{customers.length}</p>
+                  <p className="text-2xl font-semibold">{customers.length}</p>
                   <p className="text-sm text-muted-foreground">
                     Total Customers
                   </p>
@@ -421,7 +419,7 @@ const Reports = () => {
                   <Users className="h-5 w-5 text-success" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-semibold">
                     {Math.round(
                       (customers.filter((c) => c.isRepeat).length /
                         customers.length) *
@@ -447,7 +445,7 @@ const Reports = () => {
             <CardContent>
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-muted/50">
+                  <TableRow>
                     <TableHead>#</TableHead>
                     <TableHead>Customer</TableHead>
                     <TableHead>Bookings</TableHead>

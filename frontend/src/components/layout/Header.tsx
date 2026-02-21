@@ -1,4 +1,4 @@
-import { Bell, LogOut, Menu, Moon, Search, Sun } from "lucide-react";
+import { Bell, LogOut, Menu, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTheme } from "@/context/useTheme";
@@ -21,12 +21,12 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
   const initials = user?.fullName
     .split(' ')
-    .map(n => n[0])
+    .map((n) => n[0])
     .join('')
     .toUpperCase() || 'U';
 
   return (
-    <header className="h-14 border-b border-border bg-card px-4 flex items-center justify-between sticky top-0 z-40">
+    <header className="h-14 border-b border-border/60 bg-card/80 backdrop-blur-sm px-4 flex items-center justify-between sticky top-0 z-40">
       <div className="flex items-center gap-3">
         <Button
           variant="ghost"
@@ -37,48 +37,46 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           <Menu className="h-5 w-5" />
         </Button>
         <div className="relative hidden sm:block">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search bookings, customers..."
-            className="w-64 pl-9 bg-background"
+            className="w-64 pl-9 bg-background/50 border-border/60 h-8 text-sm"
           />
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" onClick={toggleTheme}>
-          {theme === 'light' ? (
-            <Moon className="h-5 w-5" />
-          ) : (
-            <Sun className="h-5 w-5" />
-          )}
+      <div className="flex items-center gap-1">
+        <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8">
+          {theme === 'light' ?
+            <Moon className="h-4 w-4" /> :
+            <Sun className="h-4 w-4" />
+          }
         </Button>
-        
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="h-5 w-5" />
-              <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-destructive text-[10px] font-medium text-destructive-foreground flex items-center justify-center">
+            <Button variant="ghost" size="icon" className="relative h-8 w-8">
+              <Bell className="h-4 w-4" />
+              <span className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-destructive text-[9px] font-semibold text-destructive-foreground flex items-center justify-center">
                 3
               </span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-72">
             <DropdownMenuItem>
-              <div className="flex flex-col gap-1">
-                <span className="font-medium">New overstay detected</span>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-sm font-medium">New overstay detected</span>
                 <span className="text-xs text-muted-foreground">Vehicle CA 123-456 is 2 hours overdue</span>
               </div>
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <div className="flex flex-col gap-1">
-                <span className="font-medium">Check-in completed</span>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-sm font-medium">Check-in completed</span>
                 <span className="text-xs text-muted-foreground">John Smith checked in at 08:30</span>
               </div>
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <div className="flex flex-col gap-1">
-                <span className="font-medium">Payment received</span>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-sm font-medium">Payment received</span>
                 <span className="text-xs text-muted-foreground">R450 via EFT from Sarah Johnson</span>
               </div>
             </DropdownMenuItem>
@@ -87,11 +85,11 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="gap-2 pl-2 pr-3">
-              <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
+            <Button variant="ghost" className="gap-2 pl-2 pr-3 h-8">
+              <div className="h-7 w-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-semibold">
                 {initials}
               </div>
-              <span className="hidden sm:inline text-sm font-medium">{user?.fullName || 'User'}</span>
+              <span className="hidden sm:inline text-[13px] font-medium">{user?.fullName || 'User'}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">

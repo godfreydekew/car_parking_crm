@@ -108,11 +108,11 @@ const Overstays = () => {
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground flex items-center gap-2">
-            <AlertTriangle className="h-6 w-6 text-warning" />
+          <h1 className="text-foreground flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-warning" />
             Overstays
           </h1>
-          <p className="text-muted-foreground">Manage overdue vehicle pickups</p>
+          <p className="text-[13px] text-muted-foreground">Manage overdue vehicle pickups</p>
         </div>
       </div>
 
@@ -124,7 +124,7 @@ const Overstays = () => {
               <Clock className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{overstayBookings.length}</p>
+              <p className="text-2xl font-semibold">{overstayBookings.length}</p>
               <p className="text-sm text-muted-foreground">Total Overstays</p>
             </div>
           </CardContent>
@@ -135,7 +135,7 @@ const Overstays = () => {
               <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
             <div>
-              <p className="text-2xl font-bold">
+              <p className="text-2xl font-semibold">
                 {overstayBookings.filter(b => differenceInHours(new Date(), b.arrivalDate) >= 24).length}
               </p>
               <p className="text-sm text-muted-foreground">Critical (24h+)</p>
@@ -148,7 +148,7 @@ const Overstays = () => {
               <Bell className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-2xl font-bold">
+              <p className="text-2xl font-semibold">
                 {overstayBookings.filter(b => differenceInHours(new Date(), b.arrivalDate) < 3).length}
               </p>
               <p className="text-sm text-muted-foreground">Recent (0-3h)</p>
@@ -180,7 +180,7 @@ const Overstays = () => {
           overstayBookings.map((booking) => {
             const overdueInfo = getOverdueInfo(booking);
             return (
-              <div key={booking.id} className="border rounded-lg p-4 bg-card space-y-3">
+              <div key={booking.id} className="border border-border/60 rounded-[var(--radius)] p-4 bg-card card-surface space-y-3">
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="font-medium">{booking.fullName}</p>
@@ -262,11 +262,11 @@ const Overstays = () => {
       </div>
 
       {/* Desktop Table */}
-      <div className="border rounded-lg overflow-hidden bg-card hidden md:block">
+      <div className="border border-border/60 rounded-[var(--radius)] overflow-hidden bg-card card-surface hidden md:block">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50">
+              <TableRow>
                 <TableHead>Customer</TableHead>
                 <TableHead>Vehicle</TableHead>
                 <TableHead>Expected Pickup</TableHead>

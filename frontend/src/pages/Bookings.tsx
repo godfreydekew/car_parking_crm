@@ -158,8 +158,8 @@ const Bookings = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">Bookings</h1>
-        <p className="text-muted-foreground">Manage all parking reservations</p>
+        <h1 className="text-foreground">Bookings</h1>
+        <p className="text-[13px] text-muted-foreground">Manage all parking reservations</p>
       </div>
 
       {/* Filters */}
@@ -225,7 +225,7 @@ const Bookings = () => {
           </p>
         ) : (
           paginatedBookings.map((booking) => (
-            <div key={booking.id} className="border rounded-lg p-4 bg-card space-y-3">
+            <div key={booking.id} className="border border-border/60 rounded-[var(--radius)] p-4 bg-card card-surface space-y-3">
               <div className="flex items-start justify-between">
                 <div>
                   <p className="font-medium">{booking.fullName}</p>
@@ -296,11 +296,11 @@ const Bookings = () => {
       </div>
 
       {/* Desktop Table */}
-      <div className="border rounded-lg overflow-hidden bg-card hidden md:block">
+      <div className="border border-border/60 rounded-[var(--radius)] overflow-hidden bg-card card-surface hidden md:block">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50">
+              <TableRow>
                 <TableHead>Customer</TableHead>
                 <TableHead>Vehicle</TableHead>
                 <TableHead>Drop-off</TableHead>

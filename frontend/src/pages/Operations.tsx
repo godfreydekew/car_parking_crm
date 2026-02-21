@@ -59,10 +59,8 @@ const Operations = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">Cars On Site</h1>
-        <p className="text-muted-foreground">
-          Vehicle monitoring and management
-        </p>
+        <h1 className="text-foreground">Cars On Site</h1>
+        <p className="text-[13px] text-muted-foreground">Vehicle monitoring and management</p>
       </div>
 
       {/* Stats Card */}
@@ -74,7 +72,7 @@ const Operations = () => {
             </div>
             <div>
               <h3 className="font-semibold text-lg">Cars On Site</h3>
-              <p className="text-2xl font-bold">{carsOnSite.length}</p>
+              <p className="text-2xl font-semibold">{carsOnSite.length}</p>
             </div>
           </div>
         </CardContent>
@@ -173,7 +171,7 @@ const Operations = () => {
                 {carsOnSite.map((booking) => (
                   <div
                     key={booking.id}
-                    className="border rounded-lg p-4 space-y-3"
+                    className="border border-border/60 rounded-[var(--radius)] p-4 card-surface space-y-3"
                   >
                     <div className="flex items-start justify-between">
                       <div>
@@ -239,7 +237,7 @@ const Operations = () => {
               <div className="hidden md:block overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-muted/50">
+                    <TableRow>
                       <TableHead>Customer</TableHead>
                       <TableHead>Vehicle</TableHead>
                       <TableHead>Drop-off Time</TableHead>

@@ -76,8 +76,8 @@ const Dashboard = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back. Here's your parking overview.</p>
+        <h1 className="text-foreground">Dashboard</h1>
+        <p className="text-[13px] text-muted-foreground">Welcome back. Here's your parking overview.</p>
       </div>
 
       {/* KPI Cards */}
@@ -166,7 +166,7 @@ const Dashboard = () => {
               {/* Mobile Cards */}
               <div className="space-y-3 md:hidden">
                 {filteredBookings.map((booking) => (
-                  <div key={booking.id} className="p-4 border rounded-lg space-y-3">
+                  <div key={booking.id} className="p-4 border border-border/60 rounded-[var(--radius)] card-surface space-y-3">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-medium">{booking.fullName}</p>

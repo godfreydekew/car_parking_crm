@@ -218,7 +218,7 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
 
           {/* Flight Details - compact grid */}
           <div className="space-y-2">
-            <h3 className="font-medium text-xs text-muted-foreground uppercase tracking-wide">
+            <h3 className="section-label">
               Flight Details
             </h3>
             <div className="grid grid-cols-2 gap-3">
@@ -273,7 +273,7 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
 
           {/* Activity Log - compact */}
           <div className="space-y-2">
-            <h3 className="font-medium text-xs text-muted-foreground uppercase tracking-wide">
+            <h3 className="section-label">
               Activity Log
             </h3>
             <div className="space-y-2">

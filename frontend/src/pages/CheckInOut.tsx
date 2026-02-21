@@ -139,12 +139,8 @@ const CheckInOut = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">
-          Check-in / Check-out
-        </h1>
-        <p className="text-muted-foreground">
-          Vehicle drop-off and pick-up management
-        </p>
+        <h1 className="text-foreground">Check-in / Check-out</h1>
+        <p className="text-[13px] text-muted-foreground">Vehicle drop-off and pick-up management</p>
       </div>
 
       {/* Daily Stats */}
@@ -157,7 +153,7 @@ const CheckInOut = () => {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Check-ins Today</p>
-                <p className="text-3xl font-bold text-foreground">
+                <p className="text-3xl font-semibold text-foreground">
                   {todayStats.checkIns}
                 </p>
               </div>
@@ -175,7 +171,7 @@ const CheckInOut = () => {
                 <p className="text-sm text-muted-foreground">
                   Check-outs Today
                 </p>
-                <p className="text-3xl font-bold text-foreground">
+                <p className="text-3xl font-semibold text-foreground">
                   {todayStats.checkOuts}
                 </p>
               </div>

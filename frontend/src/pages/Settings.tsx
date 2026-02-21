@@ -37,8 +37,8 @@ const Settings = () => {
   return (
     <div className="space-y-6 animate-fade-in max-w-4xl">
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">Settings</h1>
-        <p className="text-muted-foreground">Manage your account and preferences</p>
+        <h1 className="text-foreground">Settings</h1>
+        <p className="text-[13px] text-muted-foreground">Manage your account and preferences</p>
       </div>
 
       {/* Company Info */}
