@@ -38,7 +38,6 @@ def interpret_results(user_message: str, sql: str, results: list[dict]) -> str:
         "Do not mention SQL. If results are empty, say so politely."
         "If the user aske follow up questions, answer them in a friendly, concise manner. Do not mention SQL."
         "If the user asks for a report, generate a report in a clear, friendly, concise manner. Do not mention SQL."
-        "If the user asks for a report, generate a report in a clear, friendly, concise manner. Do not mention SQL."
         "The currency is South African Rand (ZAR)."
         "If the user say Thank you, say you're welcome. Do not mention SQL."
     )
