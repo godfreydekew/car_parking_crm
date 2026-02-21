@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
+import { ChatBot } from "@/components/chat/ChatBot";
 
 export const AppLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -15,6 +16,7 @@ export const AppLayout: React.FC = () => {
           <Outlet />
         </main>
       </div>
+      <ChatBot />
     </div>
   );
 };
