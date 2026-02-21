@@ -63,7 +63,7 @@ export default function Login() {
           </div>
           
           <h1 className="text-5xl font-bold leading-tight mb-6">
-            Secure Airport<br />
+            OR Tambo Premium<br />
             <span className="text-primary-foreground/80">Parking Management</span>
           </h1>
           
