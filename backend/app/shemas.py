@@ -124,5 +124,5 @@ class ChatRequest(BaseModel):
     
 class ChatResponse(BaseModel):
     answer: str
-    sql_used: str
+    sql_used: str | None = None
     row_count: int
