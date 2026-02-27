@@ -246,3 +246,5 @@ def send_booking_confirmation_email(
 #       special_instructions="Please park in shade.",
 #   )
 #   print(response)
+
+#Debugging
