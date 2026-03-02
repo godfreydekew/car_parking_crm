@@ -64,6 +64,7 @@ def receive_google_sheets_booking(
         
     # Brevo function here to send confirmation email to the customer
     try:
+        print("Sending confirmation email to the customer")
         send_booking_confirmation_email(
             email=row_dict["Email"], 
             name=row_dict["Full Names"],
@@ -79,6 +80,7 @@ def receive_google_sheets_booking(
             cost=row_dict["cost"],
             special_instructions=row_dict["Special Instructions"],
         )
+        print("Confirmation email sent to the customer")
     except Exception as e:
         print(f"Error sending confirmation email: {str(e)}")
         
