@@ -134,24 +134,30 @@ export const ChatBot: React.FC = () => {
           className={cn(
             "fixed z-50 flex flex-col border border-border bg-card shadow-2xl overflow-hidden",
             isMobile
-              ? "inset-0 rounded-none"
+              ? "inset-0 rounded-none pt-[env(safe-area-inset-top)]"
               : "bottom-5 right-5 w-[380px] rounded-xl"
           )}
           style={isMobile ? undefined : { height: "520px" }}
         >
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-border bg-primary px-4 py-3">
+          {/* Header - sticky so close button is always visible */}
+          <div className="flex shrink-0 items-center justify-between border-b border-border bg-primary px-4 py-3">
             <div className="flex items-center gap-2 text-primary-foreground">
               <Bot className="h-5 w-5" />
               <span className="font-semibold text-sm">Parking Assistant</span>
             </div>
             <Button
               variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/20"
+              size={isMobile ? "default" : "icon"}
+              className={cn(
+                "text-primary-foreground hover:bg-primary-foreground/20 touch-manipulation",
+                isMobile ? "h-10 px-3 gap-2" : "h-10 w-10 min-w-10 min-h-10"
+              )}
               onClick={() => setOpen(false)}
+              title="Close chat"
+              aria-label="Close chat"
             >
-              <X className="h-4 w-4" />
+              <X className="h-5 w-5 shrink-0" />
+              {isMobile && <span className="text-sm font-medium">Close</span>}
             </Button>
           </div>
 
