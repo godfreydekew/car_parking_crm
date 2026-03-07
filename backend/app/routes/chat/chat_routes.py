@@ -10,6 +10,7 @@ router = APIRouter(prefix="/api/chat", tags=["Chat"])
 @router.post("", response_model=ChatResponse)
 def chat(request: ChatRequest, db: Session = Depends(get_db)):
     try:
+        print("Chat processing called")
         result = handle_chat(
             db=db,
             user_message=request.message,
@@ -18,6 +19,8 @@ def chat(request: ChatRequest, db: Session = Depends(get_db)):
         return ChatResponse(**result)
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
             status_code=500,
             detail=f"Chat processing failed: {str(e)}",

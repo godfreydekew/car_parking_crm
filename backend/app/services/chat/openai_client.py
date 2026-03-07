@@ -1,19 +1,10 @@
-from google import genai
+from openai import OpenAI
 from .schema_context import SCHEMA_CONTEXT
 from app.config import settings
 
+client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
-client = genai.Client(api_key=settings.GEMINI_API_KEY)
-
-MODEL = "gemini-2.0-flash"  
-
-
-def _get_text(response) -> str:
-    """Safely extract text from Gemini response (handles multi-part responses)."""
-    try:
-        return response.text.strip()
-    except (ValueError, AttributeError, IndexError, KeyError):
-        return ""
+MODEL = "gpt-4o-mini"  
 
 
 def generate_sql(user_message: str, history: list[dict]) -> str:
@@ -27,8 +18,11 @@ def generate_sql(user_message: str, history: list[dict]) -> str:
     )
 
     try:
-        response = client.models.generate_content(model=MODEL, contents=prompt)
-        sql = _get_text(response)
+        response = client.chat.completions.create(
+            model=MODEL,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        sql = response.choices[0].message.content.strip()
     except Exception as e:
         return f"Error: {str(e)}"
 
@@ -54,8 +48,11 @@ def interpret_results(user_message: str, sql: str, results: list[dict]) -> str:
     )
 
     try:
-        response = client.models.generate_content(model=MODEL, contents=prompt)
-        return _get_text(response) or "I couldn't summarize the results."
+        response = client.chat.completions.create(
+            model=MODEL,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return response.choices[0].message.content.strip() or "I couldn't summarize the results."
     except Exception as e:
         return f"I couldn't summarize the results: {str(e)}"
 
