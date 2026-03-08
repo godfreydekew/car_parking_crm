@@ -3,10 +3,10 @@ Booking service for querying and retrieving bookings.
 """
 from datetime import datetime
 from typing import Optional, List
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload, selectinload
 from sqlalchemy import or_, and_
 
-from ...models import Booking, BookingStatus, FlightType, PaymentMethod
+from ...models import Booking, BookingStatus, FlightType, PaymentMethod, AuditLog
 
 
 class BookingService:
@@ -61,13 +61,29 @@ class BookingService:
         
         # Order by most recent first
         query = query.order_by(Booking.created_at.desc())
-        
+
+        # Eager load relationships to avoid N+1 queries
+        query = query.options(
+            joinedload(Booking.customer),
+            joinedload(Booking.vehicle),
+            selectinload(Booking.audit_logs).joinedload(AuditLog.actor),
+        )
+
         return query.offset(skip).limit(limit).all()
 
     @staticmethod
     def get_by_id(db: Session, booking_id: int) -> Optional[Booking]:
         """Get a single booking by ID."""
-        return db.query(Booking).filter(Booking.id == booking_id).first()
+        return (
+            db.query(Booking)
+            .filter(Booking.id == booking_id)
+            .options(
+                joinedload(Booking.customer),
+                joinedload(Booking.vehicle),
+                selectinload(Booking.audit_logs).joinedload(AuditLog.actor),
+            )
+            .first()
+        )
 
     @staticmethod
     def get_by_customer(db: Session, customer_id: int) -> List[Booking]:
