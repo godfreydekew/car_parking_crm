@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import {
   Sheet,
@@ -7,15 +7,14 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Booking } from "@/types/crm";
 import { useCRM } from "@/context/useCRM";
 import {
   Car,
-  Calendar,
   CreditCard,
   Mail,
-  MessageCircle,
   Phone,
   Plane,
   Clock,
@@ -25,6 +24,8 @@ import {
   X,
   UserX,
   FileCheck,
+  MessageSquarePlus,
+  Loader2,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
@@ -42,9 +43,19 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
   open,
   onClose,
 }) => {
-  const { checkInBooking, collectBooking, updateBookingStatus } = useCRM();
+  const { checkInBooking, collectBooking, updateBookingStatus, addBookingNote, getBookingById } = useCRM();
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [invoiceOpen, setInvoiceOpen] = useState(false);
+  const [noteInput, setNoteInput] = useState("");
+  const [isAddingNote, setIsAddingNote] = useState(false);
+
+  // Reset note input when drawer closes
+  useEffect(() => {
+    if (!open) setNoteInput("");
+  }, [open]);
+
+  // Use fresh booking from context so activity/notes update after adding a note
+  const displayBooking = booking ? (getBookingById(booking.id) ?? booking) : null;
 
   if (!booking) return null;
 
@@ -99,23 +110,46 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
     }
   };
 
+  const handleAddNote = async () => {
+    const trimmed = noteInput.trim();
+    if (!trimmed || isAddingNote) return;
+
+    setIsAddingNote(true);
+    try {
+      await addBookingNote(booking.id, trimmed);
+      setNoteInput("");
+      toast({
+        title: "Note added",
+        description: "Your note has been saved to this booking.",
+      });
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to add note. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAddingNote(false);
+    }
+  };
+
   return (
     <>
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
         <SheetHeader className="space-y-1">
           <div className="flex items-center justify-between">
-            <SheetTitle className="text-xl">{booking.fullName}</SheetTitle>
-            <StatusBadge status={booking.status} />
+            <SheetTitle className="text-xl">{displayBooking.fullName}</SheetTitle>
+            <StatusBadge status={displayBooking.status} />
           </div>
           <p className="text-sm text-muted-foreground">
-            Booking ID: {booking.id.toUpperCase()}
+            Booking ID: {displayBooking.id}
           </p>
         </SheetHeader>
 
         <div className="mt-4 space-y-4">
           {/* Quick Actions */}
-          {booking.status === "BOOKED" && (
+          {displayBooking.status === "BOOKED" && (
             <div className="space-y-2">
               <Button onClick={handleCheckIn} className="w-full gap-2" size="sm">
                 <LogIn className="h-4 w-4" />
@@ -143,7 +177,7 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
               </div>
             </div>
           )}
-          {(booking.status === "ON_SITE" || booking.status === "OVERSTAY") && (
+          {(displayBooking.status === "ON_SITE" || displayBooking.status === "OVERSTAY") && (
             <Button onClick={handleCollect} className="w-full gap-2" size="sm">
               <CheckCircle2 className="h-4 w-4" />
               Mark Collected
@@ -178,23 +212,23 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
           <div className="rounded-lg border bg-muted/20 overflow-hidden">
             {/* Customer header with name prominent */}
             <div className="px-3.5 py-3 border-b bg-muted/30">
-              <p className="font-semibold text-sm">{booking.fullName}</p>
+              <p className="font-semibold text-sm">{displayBooking.fullName}</p>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-xs text-muted-foreground">
-                {booking.email && (
+                {displayBooking.email && (
                   <a
-                    href={`mailto:${booking.email}`}
+                    href={`mailto:${displayBooking.email}`}
                     className="flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer"
                   >
                     <Mail className="h-3 w-3" />
-                    {booking.email}
+                    {displayBooking.email}
                   </a>
                 )}
                 <a
-                  href={`tel:${booking.whatsapp}`}
+                  href={`tel:${displayBooking.whatsapp}`}
                   className="flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer"
                 >
                   <Phone className="h-3 w-3" />
-                  {booking.whatsapp}
+                  {displayBooking.whatsapp}
                 </a>
               </div>
             </div>
@@ -204,12 +238,12 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
               <Car className="h-4 w-4 text-muted-foreground shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium">
-                  {booking.vehicleMake} {booking.vehicleModel}
-                  <span className="text-muted-foreground font-normal"> · {booking.vehicleColor}</span>
+                  {displayBooking.vehicleMake} {displayBooking.vehicleModel}
+                  <span className="text-muted-foreground font-normal"> · {displayBooking.vehicleColor}</span>
                 </p>
               </div>
               <div className="font-mono text-sm font-bold px-2.5 py-1 bg-background rounded border shrink-0">
-                {booking.registration}
+                {displayBooking.registration}
               </div>
             </div>
           </div>
@@ -228,9 +262,9 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
                   <span className="text-[10px] uppercase font-medium">Drop-off</span>
                 </div>
                 <p className="text-sm font-medium">
-                  {format(booking.departureDate, "dd MMM yyyy")}
+                  {format(displayBooking.departureDate, "dd MMM yyyy")}
                 </p>
-                <p className="text-xs text-muted-foreground">{booking.departureTime}</p>
+                <p className="text-xs text-muted-foreground">{displayBooking.departureTime}</p>
               </div>
               <div className="bg-muted/30 rounded-md p-2.5">
                 <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
@@ -238,13 +272,13 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
                   <span className="text-[10px] uppercase font-medium">Pick-up</span>
                 </div>
                 <p className="text-sm font-medium">
-                  {format(booking.arrivalDate, "dd MMM yyyy")}
+                  {format(displayBooking.arrivalDate, "dd MMM yyyy")}
                 </p>
-                <p className="text-xs text-muted-foreground">{booking.arrivalTime}</p>
+                <p className="text-xs text-muted-foreground">{displayBooking.arrivalTime}</p>
               </div>
             </div>
             <span className="text-xs px-2 py-0.5 bg-muted rounded font-medium inline-block">
-              {booking.flightType}
+              {displayBooking.flightType}
             </span>
           </div>
 
@@ -254,20 +288,51 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <CreditCard className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{booking.paymentMethod}</span>
+              <span className="text-sm">{displayBooking.paymentMethod}</span>
             </div>
-            <span className="text-lg font-semibold">R{booking.cost}</span>
+            <span className="text-lg font-semibold">R{displayBooking.cost}</span>
           </div>
 
-          {booking.specialInstructions && (
+          {displayBooking.specialInstructions && (
             <>
               <Separator />
               <div className="flex items-start gap-2 p-2.5 bg-warning/10 rounded-md border border-warning/20">
                 <FileText className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" />
-                <p className="text-xs">{booking.specialInstructions}</p>
+                <p className="text-xs">{displayBooking.specialInstructions}</p>
               </div>
             </>
           )}
+
+          <Separator />
+
+          {/* Add Note */}
+          <div className="space-y-2">
+            <h3 className="section-label">
+              Add Note
+            </h3>
+            <div className="space-y-2">
+              <Textarea
+                placeholder="Add a note to this booking..."
+                value={noteInput}
+                onChange={(e) => setNoteInput(e.target.value)}
+                className="min-h-[60px] resize-none"
+                disabled={isAddingNote}
+              />
+              <Button
+                onClick={handleAddNote}
+                disabled={!noteInput.trim() || isAddingNote}
+                size="sm"
+                className="w-full gap-2"
+              >
+                {isAddingNote ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <MessageSquarePlus className="h-4 w-4" />
+                )}
+                Add Note
+              </Button>
+            </div>
+          </div>
 
           <Separator />
 
@@ -277,7 +342,7 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
               Activity Log
             </h3>
             <div className="space-y-2">
-              {booking.activity
+              {displayBooking.activity
                 .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
                 .map((event) => (
                   <div key={event.id} className="flex gap-2 text-xs">
