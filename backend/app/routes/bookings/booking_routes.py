@@ -218,7 +218,8 @@ def update_booking(
         updated_booking = BookingOperationsService.update_booking(db, booking_id, booking) 
         if not updated_booking:
             raise HTTPException(status_code=404, detail="Booking not found")
-        return {"message": "Booking updated successfully"}
+        # return {"message": "Booking updated successfully"}
+        return booking_to_out(updated_booking)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
