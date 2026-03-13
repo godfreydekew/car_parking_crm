@@ -218,7 +218,8 @@ def update_booking(
         updated_booking = BookingOperationsService.update_booking(db, booking_id, booking) 
         if not updated_booking:
             raise HTTPException(status_code=404, detail="Booking not found")
-        # return {"message": "Booking updated successfully"}
+        if updated_booking.pickup_at < updated_booking.dropoff_at:
+            raise HTTPException(status_code=400, detail="Pick-up date must be after drop-off date or on the same day")
         return booking_to_out(updated_booking)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
