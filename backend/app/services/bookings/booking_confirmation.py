@@ -7,7 +7,7 @@ GOOGLE_REVIEW_URL = "https://g.page/r/Cf9MOqvx-6_1EBM/review"
 WHATSAPP_URL = "https://wa.me/27735440774"
 PHONE_NUMBER = "+27 73 544 0774"
 COMPANY_NAME = "Or Tambo Premium Parking"
-SENDER_EMAIL = "noreply@ortambopremiumparking.co.za"
+SENDER_EMAIL = "info@ortambopremiumparking.co.za"
 
 
 def _build_booking_confirmation_html(
@@ -228,23 +228,3 @@ def send_booking_confirmation_email(
     print("Booking confirmation email sent:", response)
     
     return response
-
-# if __name__ == "__main__":
-#   response = send_booking_confirmation_email(
-#       "dekewgodfrey@gmail.com",
-#       "Jane Smith",
-#       departure_date="2025-02-15",
-#     #   drop_off_time="06:00",
-#       arrival_date="2025-02-20",
-#       pickup_time="14:00",
-#       flight_type="International",
-#       vehicle_reg="ABC 123 GP",
-#       vehicle_make_model="Toyota Corolla",
-#       vehicle_color="Silver",
-#       payment_method="Card",
-#       cost="450.00",
-#       special_instructions="Please park in shade.",
-#   )
-#   print(response)
-
-#Debugging
